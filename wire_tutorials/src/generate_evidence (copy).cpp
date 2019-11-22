@@ -62,16 +62,8 @@ void generateEvidence() {
 	world_evidence.header.frame_id = "/map";
 
 	// Add evidence
-	addEvidence(world_evidence, 2, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 2.25, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 2.5, 1, 3, "mug", "red");
-    /*addEvidence(world_evidence, 7, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 8, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 9, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 19, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 29, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 39, 1, 3, "mug", "red");
-*/
+	addEvidence(world_evidence, 2, 2.2, 3, "mug", "red");
+
 	// Publish results
 	world_evidence_publisher_.publish(world_evidence);
 	ROS_INFO("Published world evidence with size %d", world_evidence.object_evidence.size());

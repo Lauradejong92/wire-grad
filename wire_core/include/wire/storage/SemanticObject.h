@@ -46,7 +46,7 @@ public:
 
     double getLikelihood(const PropertySet& ev) const;
 
-    void addPotentialAssignment(const Evidence& ev, double probability);
+    int addPotentialAssignment(const Evidence& ev, double probability);
 
     ObjectID getID() const;
 

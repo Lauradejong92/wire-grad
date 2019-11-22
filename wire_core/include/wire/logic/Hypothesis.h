@@ -95,6 +95,10 @@ public:
 
     int getHeight() const;
 
+    int getClutter() const;
+    int getExisting() const;
+    int getNew() const;
+
     // returns the number of objects in the hypothesis
     int getNumObjects() const;
 
@@ -177,6 +181,10 @@ protected:
     int height_;
 
     bool is_active_leaf_;
+
+    int aaNew;
+    int aaClutter;
+    int aaExisting;
 
 };
 

@@ -23,7 +23,7 @@ namespace mhf {
 /* ****************************************************************************** */
 
 Hypothesis::Hypothesis(const double& timestamp, double probability) : probability_(probability), timestamp_(timestamp),
-    parent_(0), assignment_set_(0), assignment_matrix_(0), height_(0), is_active_leaf_(true) {
+    parent_(0), assignment_set_(0), assignment_matrix_(0), height_(0), aaClutter(0), aaNew(0), aaExisting(0),  is_active_leaf_(true) {
 }
 
 Hypothesis::~Hypothesis() {
@@ -51,6 +51,16 @@ list<Hypothesis*>& Hypothesis::getChildHypotheses() {
 
 int Hypothesis::getHeight() const {
     return height_;
+}
+
+    int Hypothesis::getClutter() const{
+    return aaClutter;
+}
+    int Hypothesis::getExisting() const{
+    return aaExisting;
+}
+    int Hypothesis::getNew() const{
+    return aaNew;
 }
 
 int Hypothesis::getNumObjects() const {
@@ -133,6 +143,11 @@ void Hypothesis::applyAssignments() {
 
     list<const Assignment*> all_assignments;
     assignment_set_->getAllAssignments(all_assignments);
+    //std::cout << "Remaining assings: " << all_assignments.size()  <<std::endl;
+
+    static int nClut = 0;
+    static int nNew = 0;
+    static int nExis = 0;
 
     // apply cases without target
     for(list<const Assignment*>::iterator it_ass = all_assignments.begin(); it_ass != all_assignments.end();) {
@@ -141,14 +156,17 @@ void Hypothesis::applyAssignments() {
         if (ass->getType() == Assignment::CLUTTER) {
             // remove assignment from list
             it_ass = all_assignments.erase(it_ass);
+            nClut++;
         } else if (ass->getType() == Assignment::NEW) {
             SemanticObject* new_obj = ass->getNewObject();
             addObject(new_obj);
+            nNew++;
 
             // remove assignment from list
             it_ass = all_assignments.erase(it_ass);
         } else {
             ++it_ass;
+            nExis++;
         }
     }
 
@@ -180,6 +198,10 @@ void Hypothesis::applyAssignments() {
 
     assert(all_assignments.empty());
     clearAssignmentSet();
+    //std::cout << "Assigns C: " <<nClut << " N: " << nNew<< " E: " << nExis << std::endl;
+    aaExisting=nExis;
+    aaNew=nNew;
+    aaClutter=nClut;
 }
 
 /* ****************************************************************************** */

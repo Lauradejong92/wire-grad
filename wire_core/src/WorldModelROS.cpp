@@ -104,7 +104,7 @@ void WorldModelROS::start() {
         publish();
         ++count;
         if (count == 15) {
-            //showStatistics();
+            showStatistics();
             count = 0;
         }
         r.sleep();
@@ -321,22 +321,38 @@ const list<SemanticObject*>& WorldModelROS::getMAPObjects() const {
 }
 
 void WorldModelROS::showStatistics() const {
-    printf("***** %f *****\n", ros::Time::now().toSec());
-    world_model_->showStatistics();
-    cout << "Num MAP objects:      " << world_model_->getMAPObjects().size() << endl;
-    cout << "Last update:          " << last_update_duration << " seconds" << endl;
-    cout << "Max update:           " << max_update_duration << " seconds" << endl;
-    cout << "Evidence buffer size: " << evidence_buffer_.size() << endl;
+    static double tstart = ros::Time::now().toSec();
+    printf("***** %f *****\n", ros::Time::now().toSec()-tstart);
+
+    //world_model_->showStatistics();
+   // cout << "Num MAP objects:      " << world_model_->getMAPObjects().size() << endl;
+   // cout << "Last update:          " << last_update_duration << " seconds" << endl;
+   // cout << "Max update:           " << max_update_duration << " seconds" << endl;
+   // cout << "Evidence buffer size: " << evidence_buffer_.size() << endl;
 
     /*
+    cout << "Hypothesis list: " << endl;
+
+    int nHyp=0;
     const list<Hypothesis*>& hyp_list = world_model_->getHypotheses();
     for(list<Hypothesis* >::const_iterator it_hyp = hyp_list.begin(); it_hyp != hyp_list.end(); ++it_hyp) {
+        nHyp++;
 
         const list<SemanticObject*>& objs = (*it_hyp)->getObjects();
-
         double hyp_prob = (*it_hyp)->getProbability();
 
-        cout << "Hyp P = " << hyp_prob << ": " << objs.size() << " object(s)" << endl;
+        cout << "Hyp "<< nHyp <<": P = " << hyp_prob << " and  " << objs.size() << " object(s), named:" << endl;
+
+        for(list<SemanticObject* >::const_iterator it_SO = objs.begin(); it_SO != objs.end(); ++it_SO) {
+            double cur_objectID = (*it_SO)->getID();
+            const ClassModel& myClassModel=(*it_SO)->getExpectedObjectModel();
+            const string myText = myClassModel.getModelName();
+
+            cout <<  "-" << myText << " " << cur_objectID << endl;
+        }
+        cout << "\n" << endl;
+
+
 
     }
     */

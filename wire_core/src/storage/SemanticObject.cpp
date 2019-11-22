@@ -121,7 +121,10 @@ void SemanticObject::update(const Evidence& ev) {
             if (my_prop && !class_changed) {
                 my_prop->update(ev_prop->getValue(), ev.getTimestamp());
                 //cout << "Updating " << AttributeConv::attribute_str(attribute) << " with " << ev_prop->getValue().toString() << endl;
-                //cout << "Result: " << my_prop->toString() << endl;
+
+                //if (AttributeConv::attribute_str(attribute) == "position")
+                    //cout << "Result: " << my_prop->toString() << endl;
+                //?
             } else {
                 const IStateEstimator* prototype = getExpectedObjectModel().getEstimator(attribute);
                 if (prototype) {
@@ -155,13 +158,15 @@ const ClassModel& SemanticObject::getExpectedObjectModel() const {
     return *KnowledgeDatabase::getInstance().getClassModel(class_name);
 }
 
-void SemanticObject::addPotentialAssignment(const Evidence& ev, double probability) {
+int SemanticObject::addPotentialAssignment(const Evidence& ev, double probability) {
     Assignment* assignment = new Assignment(Assignment::EXISTING, &ev, this, probability);
-
+    static int nExist = 0;
     for(set<Hypothesis*>::iterator it_hyp = parent_hypotheses_.begin(); it_hyp != parent_hypotheses_.end(); ++it_hyp) {
         Hypothesis& hyp = **it_hyp;
         hyp.addPotentialAssignment(assignment);
+        nExist++;
     }
+    return nExist;
 
     // TODO: check if object now has potential assignments between hypotheses of different clusters. If so, those trees need to merge.
 }

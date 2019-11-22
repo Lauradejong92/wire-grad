@@ -106,6 +106,7 @@ public:
     /* PRINT METHODS */
 
     void showStatistics();
+    void showStatistics2();
 
 protected:
 
@@ -120,6 +121,13 @@ protected:
     double t_last_update_;
 
     int tree_height_;
+
+    int apaCLutter;
+    int apaNew;
+
+    int aaCLutter;
+    int aaNew;
+    int aaExisting;
 
     unsigned int num_max_hyps_;
 

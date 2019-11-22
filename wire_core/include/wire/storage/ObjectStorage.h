@@ -21,6 +21,10 @@ public:
 
     void removeObject(SemanticObject& obj);
 
+    int getStorageSize();
+
+    int getExisting();
+
     long getUniqueID();
 
     void match(const Evidence& ev);
@@ -33,6 +37,7 @@ protected:
 
 
     long ID_;
+    int nExisting_;
 
     std::list<SemanticObject*> objects_;
 

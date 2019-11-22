@@ -4,8 +4,6 @@
  *  Created on: Nov 13, 2012
  *      Author: jelfring
  */
-//#include <iostream>
-//#include <fstream>
 
 #include "ros/ros.h"
 #include "wire_msgs/ObjectState.h"
@@ -117,14 +115,7 @@ void worldStateCallback(const wire_msgs::WorldState::ConstPtr& msg) {
 					ROS_INFO(" - color: %s", color.c_str());
 				}
 
-
 				delete pdf;
-
-//                ofstream myfile;
-//				ROS_INFO("test123");
-//                myfile.open ("example.txt");
-//                myfile << "Writing this to a file.\n";
-//                myfile.close();
 			}
 
 		}
