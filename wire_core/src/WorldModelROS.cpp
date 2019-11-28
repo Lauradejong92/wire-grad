@@ -322,7 +322,7 @@ const list<SemanticObject*>& WorldModelROS::getMAPObjects() const {
 
 void WorldModelROS::showStatistics() const {
     static double tstart = ros::Time::now().toSec();
-    printf("***** %f *****\n", ros::Time::now().toSec()-tstart);
+    //printf("***** %f *****\n", ros::Time::now().toSec()-tstart);
 
     //world_model_->showStatistics();
    // cout << "Num MAP objects:      " << world_model_->getMAPObjects().size() << endl;

@@ -107,6 +107,7 @@ public:
 
     void showStatistics();
     void showStatistics2();
+    void showStatistics3(const EvidenceSet& ev_set);
 
 protected:
 
