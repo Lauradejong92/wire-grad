@@ -28,6 +28,8 @@
 
 #include <chrono>
 
+#include <fstream>
+
 #ifdef MHF_MEASURE_TIME
     #include <time.h>
 #endif
@@ -64,8 +66,8 @@ HypothesisTree::~HypothesisTree() {
 
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
-    showStatistics();
-    printf("   Evidence size                  = %i \n", ev_set.size());
+    //showStatistics();//print
+    //showEvidence(ev_set);//print
 
         if (ev_set.size() == 0) {
             return;
@@ -110,13 +112,14 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     showStatistics2();
     auto t7 = std::chrono::high_resolution_clock::now();
 
+    /*
     auto up2date = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
     auto expand = std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
     auto prune = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
     auto applyassig = std::chrono::duration_cast<std::chrono::microseconds>( t5 - t4 ).count();
     auto clearing = std::chrono::duration_cast<std::chrono::microseconds>( t6 - t5 ).count();
     auto showstat = std::chrono::duration_cast<std::chrono::microseconds>( t7 - t6 ).count();
- /*
+
     std::cout << "   Times: [microseconds]" << std::endl;
     std::cout << "       Update: " << up2date<< std::endl;
     std::cout << "       Expand: " << expand<< std::endl;
@@ -174,11 +177,10 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
         clutter_assignments.push_back(new Assignment(Assignment::CLUTTER, *it_ev, 0, KnowledgeDatabase::getInstance().getProbabilityClutter(**it_ev)));
 
         //Plot evidence:
-        Evidence* myEvid = *it_ev;
-        const Property* my_prop_e = myEvid->getProperty("position");
-        //cout << my_prop->toString()<< endl;
-        std::cout << "Evidence: "<< my_prop_e->toString() << std::endl;
-
+//        Evidence* myEvid = *it_ev;
+//        const Property* my_prop_e = myEvid->getProperty("position");
+//        //cout << my_prop->toString()<< endl;
+//        std::cout << "Evidence: "<< my_prop_e->toString() << std::endl;
 
     }
 
@@ -256,7 +258,7 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
             if (leafs_.empty()) {
                 // first hypothesis found (and therefore the best one)
                 min_prob = hyp_child->getProbability() * max_min_prob_ratio_;
-                printf("   Prob of MAP: %f \n", hyp_child->getProbability());
+                //printf("   Prob of MAP: %f \n", hyp_child->getProbability());
 
                 MAP_hypothesis_ = hyp_child;
             }
@@ -284,10 +286,10 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
         }
 
         if(!(leafs_.size() < num_max_hyps_)) {
-            printf("      Assignments cycle stopped early because %i hypotheses have been created \n", n_iterations);
+            //printf("      Assignments cycle stopped early because %i hypotheses have been created \n", n_iterations);
 
         }else if (!(assignment_sets.top()->getProbability() > min_prob)){
-            printf("      Assignments cycle stopped early because next assingment has probability %f \n", assignment_sets.top()->getProbability());
+            //printf("      Assignments cycle stopped early because next assingment has probability %f \n", assignment_sets.top()->getProbability());
         }
 
     }
@@ -304,8 +306,8 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
         assignment_sets.pop();
         counter++;
     }
-    if (counter>0)
-    printf("      Remaining %i assignments removed \n", counter);
+    //if (counter>0)
+    //printf("      Remaining %i assignments removed \n", counter);
 
     DEBUG_INFO(" ... done\n");
 
@@ -426,7 +428,7 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 
     }
 
-    printf("      Hypotheses pruned: %i and survived: %i \n",prune_count, surv_count);
+    //printf("      Hypotheses pruned: %i and survived: %i \n",prune_count, surv_count);
 
     // clear leaf list and add new leafs of tree
     leafs_.clear();
@@ -473,12 +475,12 @@ void HypothesisTree::showStatistics() {
 }
 
 void HypothesisTree::showStatistics2() {
-    std::cout << "   Number of hypothesis (leafs)   = " << leafs_.size() << std::endl;
-    //std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
-    ObjectStorage::getInstance().getStorageSize();
+    //std::cout << "   Number of hypothesis (leafs)   = " << leafs_.size() << std::endl;
+
+    //ObjectStorage::getInstance().getStorageSize();
     //std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize() << std::endl;
 
-    std::cout << "   MAP Hypothesis objects         = " << std::endl;
+    //std::cout << "   MAP Hypothesis objects         = " << std::endl;
     std::list<SemanticObject*> objects = getMAPObjects();
     for(std::list<SemanticObject*>::iterator it_obj = objects.begin(); it_obj != objects.end(); ++it_obj) {
         SemanticObject& obj = **it_obj;
@@ -488,23 +490,35 @@ void HypothesisTree::showStatistics2() {
         std::cout << "MAP     -Obj: " <<obj.getID() <<" at "<< my_prop->toString() << std::endl;
     }
 
+//    std::cout << "   Assigns" << std::endl;
+//    std::cout << "      Potential assigns:            C= " << apaCLutter << "      N= " << apaNew <<"      E=" << ObjectStorage::getInstance().getExisting()<< std::endl;
+//    std::cout << "      Actual assigns:               C= " << aaCLutter <<"        N= " << aaNew << "      E= " << aaExisting << std::endl;
 
+    //Ending cycle
+//    std::cout << "---------------------------------------------------------------------------" <<  std::endl;
+//    std::cout << " " <<  std::endl;
 
-
-    std::cout << "   Assigns" << std::endl;
-    std::cout << "      Potential assigns:            C= " << apaCLutter << "      N= " << apaNew <<"      E=" << ObjectStorage::getInstance().getExisting()<< std::endl;
-    std::cout << "      Actual assigns:               C= " << aaCLutter <<"        N= " << aaNew << "      E= " << aaExisting << std::endl;
-    std::cout << "---------------------------------------------------------------------------" <<  std::endl;
-    std::cout << " " <<  std::endl;
+    //std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
     //std::cout << "   MAPObjects size             = " << getMAPObjects().size() << std::endl;
     //std::cout << "   MAPhyopthesis objects       = " <<getMAPHypothesis().getNumObjects() << std::endl;
     //std::cout << "   MAPtimestamp                = " <<getMAPHypothesis().getTimestamp() << std::endl;
 //    std::cout << "   Tree height                 = " << tree_height_ << std::endl;
 //    std::cout << "   Test                        = " << root_->getTimestamp() << std::endl;
 //    std::cout << "   Test                        = " << root_->getProbability() << std::endl;
+}
+
+void HypothesisTree::showEvidence(const EvidenceSet& ev_set){
+    //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
+    //printf("   Evidence size                  = %i \n", ev_set.size());
+    for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
+        //Plot evidence:
+        Evidence* myEvid = *it_ev;
+        const Property* my_prop_e = myEvid->getProperty("position");
+        //cout << my_prop->toString()<< endl;
+        std::cout << "Evidence: "<< my_prop_e->toString() << std::endl;
 
 
-
+    }
 }
 
 }
