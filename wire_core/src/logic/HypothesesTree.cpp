@@ -469,7 +469,7 @@ void HypothesisTree::showStatistics() {
     static int nRep = 0;
     nRep++;
     std::cout << "---------------------------------------------------------------------------" << std::endl;
-    std::cout << "Report of Cycle                   = " << nRep << std::endl;
+    std::cout << "123testReport of Cycle                   = " << nRep << std::endl;
 }
 
 void HypothesisTree::showStatistics2() {
