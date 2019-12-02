@@ -46,21 +46,22 @@ int ObjectStorage::getStorageSize(){
     for (int i = 1; i <= ID_; i++)
         count_count.push_back(0);
 
-    cout << "   Leafs containing objects: " << endl;
+//    cout << "   Leafs containing objects: " << endl;
     for(list<SemanticObject*>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
         SemanticObject& obj = **it_obj;
         count_count[obj.getID()]++;
 
         const Property* my_prop = obj.getProperty("position");
         //cout << my_prop->toString()<< endl;
-        cout << "     -Obj: " <<obj.getID() <<" at "<< my_prop->toString() << endl;
+        //cout << "     -Obj: " <<obj.getID() <<" at "<< my_prop->toString() << endl;
     }
 
     // print overzicht:
-    cout << "   The object storage consists of: " << endl;
+    //cout << "   The object storage consists of: " << endl;
     for (int k = 0; k <= ID_ -1; k++){
         if (count_count[k]!=0)
-            cout << "     -Object " << k <<", stored " << count_count[k] << " times" << endl;
+            //cout << "     -Object " << k <<", stored " << count_count[k] << " times" << endl;
+            cout << ", " << k <<", " << count_count[k] << endl;
     }
      //*/
 
@@ -101,6 +102,8 @@ void ObjectStorage::match(const Evidence& ev) {
 
             nExist= obj.addPotentialAssignment(ev, prob_existing);
 
+        } else {
+            cout << "not compatible " << endl;
         }
 
     }

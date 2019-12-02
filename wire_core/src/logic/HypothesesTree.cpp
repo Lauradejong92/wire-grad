@@ -28,6 +28,9 @@
 
 #include <chrono>
 
+#include <iostream>
+#include <fstream>
+
 #ifdef MHF_MEASURE_TIME
     #include <time.h>
 #endif
@@ -64,7 +67,7 @@ HypothesisTree::~HypothesisTree() {
 
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
-    //showStatistics();
+    showStatistics();
     //printf("   Evidence size                  = %i \n", ev_set.size());
 
         if (ev_set.size() == 0) {
@@ -108,7 +111,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     auto t6 = std::chrono::high_resolution_clock::now();
 
     //showStatistics2();
-    showStatistics3(ev_set);
+    //showStatistics3(ev_set);
     auto t7 = std::chrono::high_resolution_clock::now();
 
     auto up2date = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
@@ -471,6 +474,10 @@ void HypothesisTree::showStatistics() {
     nRep++;
     std::cout << "---------------------------------------------------------------------------" << std::endl;
     std::cout << "Report of Cycle                   = " << nRep << std::endl;
+    std::ofstream myfile;
+    myfile.open("/home/laura/catkin_ws/example1.txt", std::ios::app);
+    myfile << "Writing123....\n";
+    myfile.close();
 }
 
 void HypothesisTree::showStatistics2() {
@@ -526,7 +533,9 @@ void HypothesisTree::showStatistics2() {
 void HypothesisTree::showStatistics3(const EvidenceSet& ev_set) {
     static int nRep2 = 0;
     nRep2++;
-    std::cout << " " << nRep2 << ", "<< leafs_.size() << ", "<<ev_set.size() << ", "<< getMAPHypothesis().getProbability()<<";"<<std::endl;
+    std::cout << " " << nRep2 << ", "<< leafs_.size() << ", "<<ev_set.size() << ", "<< getMAPHypothesis().getProbability()<<std::endl;
+    ObjectStorage::getInstance().getStorageSize();
+    std::cout<<";"<<std::endl;
 
 }
 
