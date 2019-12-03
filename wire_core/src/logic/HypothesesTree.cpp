@@ -72,6 +72,11 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
     myfile_map.open("/home/laura/Documents/matlab/Data_collection/map_mat.m");
     myfile_map << " ";
     myfile_map.close();
+        //hypothesis
+    std::ofstream myfile_hyp;
+    myfile_hyp.open("/home/laura/Documents/matlab/Data_collection/hyp_mat.m");
+    myfile_hyp << " ";
+    myfile_hyp.close();
 
 }
 
@@ -129,9 +134,9 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     ++n_updates_;
 
-    showStatistics2(nRep);
     showMAP(nRep);
-
+    showHypP(nRep);
+    showStatistics2(nRep);
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
     printf("Total update took %f seconds.\n", (t_end_total.tv_sec - t_start_total.tv_sec) + double(t_end_total.tv_nsec - t_start_total.tv_nsec) / 1e9);
@@ -528,6 +533,19 @@ void HypothesisTree::showMAP(int cycle) {
     }
     myfile_map << "];"<<"\n";
     myfile_map.close();
+}
+
+void HypothesisTree::showHypP(int cycle){
+    std::ofstream myfile_hyp;
+    myfile_hyp.open("/home/laura/Documents/matlab/Data_collection/hyp_mat.m", std::ios::app);
+    myfile_hyp << "hyp{"<< cycle<<"}=[";
+    std::list<Hypothesis *> allHyps = getHypotheses();
+    for (std::list<Hypothesis *>::iterator it_hyp = allHyps.begin(); it_hyp != allHyps.end(); ++it_hyp) {
+        Hypothesis &myHyp = **it_hyp;
+        myfile_hyp << myHyp.getProbability() << ",";
+    }
+    myfile_hyp<<"];"<<"\n";
+    myfile_hyp.close();
 }
 
 }
