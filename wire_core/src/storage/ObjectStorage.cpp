@@ -42,19 +42,28 @@ int ObjectStorage::getStorageSize(){
     //*
     //init telvector
     vector<int> count_count;
+    static int cycle = 0;
+    cycle++;
+
+
+    std::ofstream myfile_obj;
+    myfile_obj.open("/home/laura/Documents/matlab/Data_collection/objects_mat.m", std::ios::app);
+    myfile_obj << "objects{"<< cycle<<"}{:}{:}=["<<"\n";
 
     for (int i = 1; i <= ID_; i++)
         count_count.push_back(0);
 
-    cout << "   Leafs containing objects: " << endl;
+    //schrijf naar file
     for(list<SemanticObject*>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
         SemanticObject& obj = **it_obj;
         count_count[obj.getID()]++;
 
         const Property* my_prop = obj.getProperty("position");
         //cout << my_prop->toString()<< endl;
-        cout << "     -Obj: " <<obj.getID() <<" at "<< my_prop->toString() << endl;
+        myfile_obj << obj.getID() <<","<< my_prop->toString() <<endl;
     }
+    myfile_obj << "];"<<"\n";
+    myfile_obj.close();
 
     // print overzicht:
     cout << "   The object storage consists of: " << endl;

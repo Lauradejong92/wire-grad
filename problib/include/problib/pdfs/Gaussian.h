@@ -148,6 +148,7 @@ public:
      * @return The Gaussian as string
      */
 	std::string toString(const std::string& indent = "") const;
+    std::string toString2(const std::string& indent = "") const;
 
 protected:
 

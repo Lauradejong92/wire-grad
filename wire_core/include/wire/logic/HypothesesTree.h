@@ -108,6 +108,7 @@ public:
     void showStatistics();
     void showStatistics2();
     void showEvidence(const EvidenceSet& ev_set);
+    void showMAP();
 
 
 protected:

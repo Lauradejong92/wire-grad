@@ -188,7 +188,7 @@ const arma::mat& Gaussian::getCovariance() const {
 	return ptr_->cov_;
 }
 
-std::string Gaussian::toString(const std::string& indent) const {
+std::string Gaussian::toString2(const std::string& indent) const {
 	if (!ptr_) {
 		return "N(-)";
 	}
@@ -210,4 +210,17 @@ std::string Gaussian::toString(const std::string& indent) const {
 	s << "] )";
 
 	return s.str();
+}
+
+std::string Gaussian::toString(const std::string& indent) const {
+
+    std::stringstream s;
+    for(int i = 0; i < dimensions_; ++i) {
+        s << " " << ptr_->mu_(i);
+    }
+
+
+    s << " " << ptr_->cov_(1, 1) <<";";
+
+    return s.str();
 }
