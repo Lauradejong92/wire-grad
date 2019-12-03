@@ -105,10 +105,10 @@ public:
 
     /* PRINT METHODS */
 
-    void showStatistics();
-    void showStatistics2();
-    void showEvidence(const EvidenceSet& ev_set);
-    void showMAP();
+    void showStatistics(int cycle);
+    void showStatistics2(int cycle);
+    void showEvidence(const EvidenceSet& ev_set,int cycle);
+    void showMAP(int cycle);
 
 
 protected:

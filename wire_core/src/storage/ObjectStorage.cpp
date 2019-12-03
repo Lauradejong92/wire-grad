@@ -38,17 +38,14 @@ void ObjectStorage::removeObject(SemanticObject& obj) {
     objects_.erase(obj.it_obj_storage_);
 }
 
-int ObjectStorage::getStorageSize(){
+int ObjectStorage::getStorageSize(int cycle){
     //*
     //init telvector
     vector<int> count_count;
-    static int cycle = 0;
-    cycle++;
-
 
     std::ofstream myfile_obj;
     myfile_obj.open("/home/laura/Documents/matlab/Data_collection/objects_mat.m", std::ios::app);
-    myfile_obj << "objects{"<< cycle<<"}{:}{:}=["<<"\n";
+    myfile_obj << "objects{"<< cycle<<"}=["<<"\n";
 
     for (int i = 1; i <= ID_; i++)
         count_count.push_back(0);

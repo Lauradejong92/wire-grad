@@ -21,7 +21,7 @@ public:
 
     void removeObject(SemanticObject& obj);
 
-    int getStorageSize();
+    int getStorageSize( int cycle);
 
     int getExisting();
 

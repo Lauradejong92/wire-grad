@@ -65,12 +65,12 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
         //evidence
     std::ofstream myfile_ev;
     myfile_ev.open("/home/laura/Documents/matlab/Data_collection/evidence_mat.m");
-    myfile_ev << "evidence=[";
+    myfile_ev << " ";
     myfile_ev.close();
         //map
     std::ofstream myfile_map;
     myfile_map.open("/home/laura/Documents/matlab/Data_collection/map_mat.m");
-    myfile_map << "MAP=[";
+    myfile_map << " ";
     myfile_map.close();
 
 }
@@ -85,9 +85,12 @@ HypothesisTree::~HypothesisTree() {
 /* ****************************************************************************** */
 
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
+    static int nRep = 0;
+    nRep++;
+
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
-    showStatistics();//print
-    showEvidence(ev_set);//print
+    showStatistics(nRep);//print
+    showEvidence(ev_set,nRep);//print
 
         if (ev_set.size() == 0) {
             return;
@@ -126,10 +129,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     ++n_updates_;
 
-    showMAP();
-    showStatistics2();
-
-
+    showStatistics2(nRep);
+    showMAP(nRep);
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
@@ -469,18 +470,16 @@ const std::list<SemanticObject*>& HypothesisTree::getMAPObjects() const {
 /* *                              PRINT METHODS                                 * */
 /* ****************************************************************************** */
 
-void HypothesisTree::showStatistics() {
-    static int nRep = 0;
-    nRep++;
+void HypothesisTree::showStatistics(int cycle) {
     std::cout << "---------------------------------------------------------------------------" << std::endl;
-    std::cout << "Report of Cycle                   = " << nRep << std::endl;
+    std::cout << "Report of Cycle                   = " << cycle << std::endl;
 }
 
-void HypothesisTree::showStatistics2() {
+void HypothesisTree::showStatistics2(int cycle) {
     //std::cout << "   Number of hypothesis (leafs)   = " << leafs_.size() << std::endl;
 
 
-    std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize() << std::endl;
+    std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(cycle) << std::endl;
 
 //    std::cout << "   Assigns" << std::endl;
 //    std::cout << "      Potential assigns:            C= " << apaCLutter << "      N= " << apaNew <<"      E=" << ObjectStorage::getInstance().getExisting()<< std::endl;
@@ -499,11 +498,12 @@ void HypothesisTree::showStatistics2() {
 //    std::cout << "   Test                        = " << root_->getProbability() << std::endl;
 }
 
-void HypothesisTree::showEvidence(const EvidenceSet& ev_set){
+void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
     //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
     printf("   Evidence size                  = %i \n", ev_set.size());
     std::ofstream myfile_ev;
     myfile_ev.open("/home/laura/Documents/matlab/Data_collection/evidence_mat.m", std::ios::app);
+    myfile_ev << "evidence{"<< cycle<<"}=[";
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
         //Plot evidence:
         Evidence* myEvid = *it_ev;
@@ -511,22 +511,22 @@ void HypothesisTree::showEvidence(const EvidenceSet& ev_set){
         myfile_ev << my_prop_e->toString()<<"\n";
         //std::cout << "Evidence: "<< my_prop_e->toString() << std::endl;
     }
+    myfile_ev << "];"<<"\n";
     myfile_ev.close();
 }
 
-void HypothesisTree::showMAP() {
+void HypothesisTree::showMAP(int cycle) {
     std::cout << "   MAP Hypothesis objects         = " << std::endl;
     std::list<SemanticObject*> objects = getMAPObjects();
     std::ofstream myfile_map;
     myfile_map.open("/home/laura/Documents/matlab/Data_collection/map_mat.m", std::ios::app);
+    myfile_map << "MAP{"<< cycle<<"}=[";
     for(std::list<SemanticObject*>::iterator it_obj = objects.begin(); it_obj != objects.end(); ++it_obj) {
         SemanticObject& obj = **it_obj;
-
         const Property* my_prop = obj.getProperty("position");
-        //cout << my_prop->toString()<< endl;
-        //std::cout << "MAP     -Obj: " <<obj.getID() <<" at "<< my_prop->toString() << std::endl;
         myfile_map << obj.getID()<<", "<<my_prop->toString()<<"\n";
     }
+    myfile_map << "];"<<"\n";
     myfile_map.close();
 }
 
