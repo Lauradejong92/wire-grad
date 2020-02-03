@@ -372,7 +372,7 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
         Hypothesis* hyp = hyp_stack.front();
         hyp_stack.pop_front();
 
-        //printf("hyp height %i \n", hyp->getHeight());
+//        printf("hyp height %i with prob %f\n", hyp->getHeight(),hyp->getProbability());
 
         std::list<Hypothesis*>& children = hyp->getChildHypotheses();
         if (!children.empty()) {
@@ -385,6 +385,7 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
                 }
                 //printf(" (%p, %f)", *it_child, (*it_child)->getProbability());
             }
+
 
             double prob_ratio = 0;
 

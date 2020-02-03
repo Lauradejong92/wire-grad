@@ -63,8 +63,8 @@ void generateEvidence() {
 
 	// Add evidence
 	addEvidence(world_evidence, 2, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 2.25, 1, 3, "mug", "red");
-    addEvidence(world_evidence, 2.5, 1, 3, "mug", "red");
+    addEvidence(world_evidence, 2.30, 1, 3, "mug", "red");
+    addEvidence(world_evidence, 2.60, 1, 3, "mug", "red");
     /*addEvidence(world_evidence, 7, 1, 3, "mug", "red");
     addEvidence(world_evidence, 8, 1, 3, "mug", "red");
     addEvidence(world_evidence, 9, 1, 3, "mug", "red");
