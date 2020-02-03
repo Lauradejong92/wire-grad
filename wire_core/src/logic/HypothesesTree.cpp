@@ -400,7 +400,7 @@ const std::list<SemanticObject*>& HypothesisTree::getMAPObjects() const {
 void HypothesisTree::showStatistics() {
     std::cout << "   Number of hypotheses        = " << leafs_.size() << std::endl;
     std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
-    std::cout << "   Tree height                  = " << tree_height_ << std::endl;
+    std::cout << "   Tree height                 = " << tree_height_ << std::endl;
 }
 
 }
