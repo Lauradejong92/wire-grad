@@ -4,6 +4,7 @@
 #include "wire/core/Property.h"
 #include "wire/core/Evidence.h"
 #include "wire/core/EvidenceSet.h"
+#include "wire/core/EvidenceStorage.h"
 #include "wire/storage/SemanticObject.h"
 #include "wire/util/ObjectModelParser.h"
 
