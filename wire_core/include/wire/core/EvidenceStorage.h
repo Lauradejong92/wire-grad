@@ -20,7 +20,8 @@ class EvidenceStorage {
 
 public:
 
-    EvidenceStorage();
+    static EvidenceStorage& getInstance();
+
 
     virtual ~EvidenceStorage();
 
@@ -59,7 +60,8 @@ public:
     typedef std::vector<Evidence*>::const_iterator const_iterator;
 
 protected:
-
+    EvidenceStorage();
+    static EvidenceStorage* instance_;
     /// The time from which all evidence in the set originates
     Time timestamp_;
 

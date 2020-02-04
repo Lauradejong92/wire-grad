@@ -15,6 +15,17 @@ namespace mhf {
 EvidenceStorage::EvidenceStorage() : timestamp_(-1) {
 }
 
+EvidenceStorage* EvidenceStorage::instance_ = 0;
+
+EvidenceStorage& EvidenceStorage::getInstance() {
+        if (instance_) {
+            return *instance_;
+        }
+        instance_ = new EvidenceStorage();
+        return *instance_;
+    }
+
+
 EvidenceStorage::~EvidenceStorage() {
 }
 
