@@ -25,7 +25,7 @@ public:
 
     virtual ~EvidenceStorage();
 
-    void hello123();
+    void cluster();
 
     /**
      * @brief Adds evidence to the evidence set

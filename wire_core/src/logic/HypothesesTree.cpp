@@ -73,11 +73,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
     //Add evidence to storage ???
-
     EvidenceSet* my_set = new EvidenceSet(ev_set);
     EvidenceStorage::getInstance().add(my_set);
-    printf("Storage size = %i \n",EvidenceStorage::getInstance().size());
-    EvidenceStorage::getInstance().hello123();
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
@@ -87,6 +84,10 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     t_last_update_ = ev_set.getTimestamp();
 
     expandTree(ev_set);
+
+    //Clusterbased pruning
+    //Cluster forming
+    EvidenceStorage::getInstance().cluster();
 
     pruneTree(ev_set.getTimestamp());
 
