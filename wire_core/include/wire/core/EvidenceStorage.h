@@ -31,7 +31,7 @@ public:
      * @brief Adds evidence to the evidence set
      * @param ev The evidence
      */
-    void add(Evidence* ev);
+    void add(EvidenceSet* ev_set);
 
     /**
      * @brief Returns the number of evidence items in the set
@@ -49,15 +49,15 @@ public:
      *  Returns a read-only (constant) iterator that points to the
      *  first evidence item in the evidence set
      */
-    std::vector<Evidence*>::const_iterator begin() const;
+    std::vector<EvidenceSet*>::const_iterator begin() const;
 
     /**
      *  Returns a read-only (constant) iterator that points one past the
      * last evidence item in the evidence set
      */
-    std::vector<Evidence*>::const_iterator end() const;
+    std::vector<EvidenceSet*>::const_iterator end() const;
 
-    typedef std::vector<Evidence*>::const_iterator const_iterator;
+    typedef std::vector<EvidenceSet*>::const_iterator const_iterator;
 
 protected:
     EvidenceStorage();
@@ -66,7 +66,7 @@ protected:
     Time timestamp_;
 
     /// Collection of evidence items
-    std::vector<Evidence*> evidence_;
+    std::vector<EvidenceSet*> evidenceSet_;
 
 };
 
