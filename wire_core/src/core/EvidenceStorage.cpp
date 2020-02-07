@@ -36,8 +36,10 @@ pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
 
     Evidence* seed = *it_ev;
     const Property* prop_seed = seed->getProperty("position");
+    //printf("1");
 //// TODO hier gaat het dus mis bij 1 evidence:
     const pbl::PDF& pdf_seed = prop_seed->getValue();
+    //printf("2");
     //printf("check: \n");
     const pbl::Gaussian* gauss_seed = pbl::PDFtoGaussian(pdf_seed);
     const pbl::Vector& pos = gauss_seed->getMean();
@@ -54,7 +56,7 @@ void EvidenceStorage::cluster(int setsize) {
     int scale = 5;//3
 
     if (evidenceSet_.size()>=setsize){
-        printf("Start clustering: \n");
+        //printf("Start clustering: \n");
 
         //For oldest set (= at time-setsize)
         EvidenceSet* origin_set = new EvidenceSet(**evidenceSet_.begin());
@@ -113,22 +115,6 @@ void EvidenceStorage::cluster(int setsize) {
 
 
     }
-
-//    printf("Set consists of: \n");
-//
-
-
-//    for(std::vector<EvidenceSet*>::const_iterator it_set =evidenceSet_.begin(); it_set != evidenceSet_.end(); ++it_set) {
-//        EvidenceSet* my_set = new EvidenceSet(**it_set);
-//        printf("Set at: %i \n",my_set->size());
-//        //printf("Time  : %f \n",my_set->getTimestamp());
-//
-//        for(EvidenceSet::const_iterator it_ev = my_set->begin(); it_ev != my_set->end(); ++it_ev) {
-//            Evidence& evi = **it_ev;
-//            printf("    -                  time: %f \n",evi.getTimestamp() );
-//        }
-//
-//    }
 
 }
 

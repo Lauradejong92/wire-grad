@@ -91,6 +91,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //Clusterbased pruning
     //Cluster forming
 
+    pruneClusterwise();
 
     pruneTree(ev_set.getTimestamp());
 
@@ -379,6 +380,12 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
     DEBUG_INFO("   #leafs after pruning = %i\n", (int)leafs_.size());
 
     DEBUG_INFO("pruneTree - end\n");
+}
+
+void HypothesisTree::pruneClusterwise() {
+    printf("Test123 \n");
+    EvidenceSet* cluster = new EvidenceSet(**ClusterStorage::getInstance().begin());
+
 }
 
 /* ****************************************************************************** */
