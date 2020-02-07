@@ -63,6 +63,7 @@ HypothesisTree::~HypothesisTree() {
 
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
+    static int setsize =5;
 
     if (ev_set.size() == 0) {
         return;
@@ -74,8 +75,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 #endif
     //Add evidence to storage ???
     EvidenceSet* my_set = new EvidenceSet(ev_set);
-    EvidenceStorage::getInstance().add(my_set);
-    EvidenceStorage::getInstance().cluster();
+    EvidenceStorage::getInstance().add(my_set,setsize);
+    EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {

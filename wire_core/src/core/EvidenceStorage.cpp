@@ -32,9 +32,12 @@ EvidenceStorage::~EvidenceStorage() {
 }
 
 pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
+
     Evidence* seed = *it_ev;
     const Property* prop_seed = seed->getProperty("position");
+//// TODO hier gaat het dus mis bij 1 evidence:
     const pbl::PDF& pdf_seed = prop_seed->getValue();
+    //printf("check: \n");
     const pbl::Gaussian* gauss_seed = pbl::PDFtoGaussian(pdf_seed);
     const pbl::Vector& pos = gauss_seed->getMean();
 
@@ -43,10 +46,10 @@ pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
     return pos;
 }
 
-void EvidenceStorage::cluster() {
+void EvidenceStorage::cluster(int setsize) {
 
-    int setsize= 5;
-    float noiserad = 0.005;
+    //int setsize= 5;
+    float sigma = 0.005;
     int scale = 5;//3
 
     if (evidenceSet_.size()>=setsize){
@@ -54,6 +57,7 @@ void EvidenceStorage::cluster() {
 
         //For oldest set (= at time-setsize)
         EvidenceSet* origin_set = new EvidenceSet(**evidenceSet_.begin());
+        printf ("size: %i", origin_set->size());
         for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
 
             //find position of cluster seed of
@@ -73,15 +77,15 @@ void EvidenceStorage::cluster() {
                     //printf("distance = %f \n",distance);
 
                     if (candidate == 0){
-                        if (distance<=noiserad){
+                        if (distance<=sigma){
                             printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                             candidate=1;
-                        } else if (distance<=scale*noiserad){
+                        } else if (distance<=scale*sigma){
                             printf("cluster not free \n");
                             candidate=2;
                             it_nextev = comp_set->end()-1;
                         }
-                    } else if (distance<=scale*noiserad){
+                    } else if (distance<=scale*sigma){
                         printf("cluster not free \n");
                         candidate=2;
                         it_nextev = comp_set->end()-1;
@@ -119,8 +123,8 @@ void EvidenceStorage::cluster() {
 
 }
 
-void EvidenceStorage::add(EvidenceSet* ev_set) {
-    int setsize= 5; //Number of points in historic cluster
+    void EvidenceStorage::add(EvidenceSet* ev_set,int setsize) {
+    //int setsize= 5; //Number of points in historic cluster
 
     evidenceSet_.push_back(ev_set);
 

@@ -27,13 +27,13 @@ public:
 
     pbl::Vector getPos(EvidenceSet::const_iterator it_ev);
 
-    void cluster();
+    void cluster(int setsize);
 
     /**
      * @brief Adds evidence to the evidence set
      * @param ev The evidence
      */
-    void add(EvidenceSet* ev_set);
+    void add(EvidenceSet* ev_set, int setsize);
 
     /**
      * @brief Returns the number of evidence items in the set
