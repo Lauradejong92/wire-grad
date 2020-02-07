@@ -9,6 +9,7 @@
 #include "wire/core/EvidenceSet.h"
 #include "wire/core/Evidence.h"
 #include "wire/core/EvidenceStorage.h"
+#include "wire/core/ClusterStorage.h"
 #include "wire/core/Property.h"
 #include "problib/conversions.h"
 
@@ -57,14 +58,17 @@ void EvidenceStorage::cluster(int setsize) {
 
         //For oldest set (= at time-setsize)
         EvidenceSet* origin_set = new EvidenceSet(**evidenceSet_.begin());
-        printf ("size: %i", origin_set->size());
+        //printf ("size: %i", origin_set->size());
         for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
+            EvidenceSet* cluster = new EvidenceSet();
+            cluster->add(*it_ev);
 
             //find position of cluster seed of
             pbl::Vector origin_pos =EvidenceStorage().getPos(it_ev);
 
             ////Compare to other points in time
             for (int count=1; count< setsize;count++){
+
                 //open set
                 EvidenceSet* comp_set = new EvidenceSet(**(evidenceSet_.begin()+count));
                 int candidate = 0;
@@ -78,27 +82,32 @@ void EvidenceStorage::cluster(int setsize) {
 
                     if (candidate == 0){
                         if (distance<=sigma){
-                            printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
+                            //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                             candidate=1;
+                            cluster->add(*it_nextev);
+
                         } else if (distance<=scale*sigma){
-                            printf("cluster not free \n");
+                            //printf("cluster not free \n");
                             candidate=2;
                             it_nextev = comp_set->end()-1;
                         }
                     } else if (distance<=scale*sigma){
-                        printf("cluster not free \n");
+                        //printf("cluster not free \n");
                         candidate=2;
                         it_nextev = comp_set->end()-1;
                     }
                 }
-                if (candidate ==1){
-                    printf("continue to cluster \n");
-                    //open evidenceset(count)
-                } else {
-                    printf("cluster ends \n");
-                    // if cluster, remove cluster
+
+                if (candidate !=1){
+                    //terminate early
                     count = setsize;
                 }
+            }
+
+            //when full cluster is found, add to storage
+            if (cluster->size()==setsize){
+               ClusterStorage::getInstance().add(cluster);
+               //printf("lalala %i \n",ClusterStorage::getInstance().size());
             }
         }
 

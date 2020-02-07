@@ -22,6 +22,7 @@
 #include "wire/core/Property.h"
 #include "wire/core/ClassModel.h"
 #include "wire/core/EvidenceStorage.h"
+#include "wire/core/ClusterStorage.h"
 
 #include <queue>
 #include <cassert>

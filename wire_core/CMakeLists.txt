@@ -48,6 +48,7 @@ add_library(wire
     src/core/Evidence.cpp
     src/core/EvidenceSet.cpp
         src/core/EvidenceStorage.cpp
+        src/core/ClusterStorage.cpp
 
     src/core/PropertySet.cpp
     src/storage/SemanticObject.cpp
@@ -67,6 +68,7 @@ add_library(wire
     include/wire/core/Evidence.h
     include/wire/core/EvidenceSet.h
         include/wire/core/EvidenceStorage.h
+        include/wire/core/ClusterStorage.h
     include/wire/core/PropertySet.h
     include/wire/storage/SemanticObject.h
     include/wire/storage/ObjectStorage.h
