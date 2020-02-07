@@ -10,6 +10,7 @@
 #include "wire/core/Evidence.h"
 #include "wire/core/EvidenceStorage.h"
 #include "wire/core/Property.h"
+#include "problib/conversions.h"
 
 namespace mhf {
 
@@ -30,8 +31,23 @@ EvidenceStorage& EvidenceStorage::getInstance() {
 EvidenceStorage::~EvidenceStorage() {
 }
 
+pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
+    Evidence* seed = *it_ev;
+    const Property* prop_seed = seed->getProperty("position");
+    const pbl::PDF& pdf_seed = prop_seed->getValue();
+    const pbl::Gaussian* gauss_seed = pbl::PDFtoGaussian(pdf_seed);
+    const pbl::Vector& pos = gauss_seed->getMean();
+
+    //printf(" - position: (%f,%f,%f) \n", pos(0), pos(1), pos(2));
+
+    return pos;
+}
+
 void EvidenceStorage::cluster() {
+
     int setsize= 5;
+    float noiserad = 0.005;
+    int scale = 5;//3
 
     if (evidenceSet_.size()>=setsize){
         printf("Start clustering: \n");
@@ -39,24 +55,50 @@ void EvidenceStorage::cluster() {
         //For oldest set (= at time-setsize)
         EvidenceSet* origin_set = new EvidenceSet(**evidenceSet_.begin());
         for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
-            //Evidence& seed = **it_ev;
-            Evidence* seed = *it_ev;
-            const Property* my_prop_e = seed->getProperty("position");
-            const pbl::PDF& origin_pos = my_prop_e->getValue();
 
+            //find position of cluster seed of
+            pbl::Vector origin_pos =EvidenceStorage().getPos(it_ev);
 
-            std::cout << "Evidence: "<< my_prop_e->toString() << std::endl;
-            //std::string mystring = my_prop_e->getValue().toString();
-            //printf("so: %s \n",mystring);
-            //std::cout << "Evidence: "<< seed->toString()<< std::endl;
-            //std::vector<double *> listing= my_prop_e->getValue();
+            ////Compare to other points in time
+            for (int count=1; count< setsize;count++){
+                //open set
+                EvidenceSet* comp_set = new EvidenceSet(**(evidenceSet_.begin()+count));
+                int candidate = 0;
+                for(EvidenceSet::const_iterator it_nextev = comp_set->begin(); it_nextev != comp_set->end(); ++it_nextev) {
+                    //// Todo: If appearance is equal
+                    pbl::Vector next_pos =EvidenceStorage().getPos(it_nextev);
 
+                    //// TODO calculate distance in 3D
+                    float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
+                    //printf("distance = %f \n",distance);
 
+                    if (candidate == 0){
+                        if (distance<=noiserad){
+                            printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
+                            candidate=1;
+                        } else if (distance<=scale*noiserad){
+                            printf("cluster not free \n");
+                            candidate=2;
+                            it_nextev = comp_set->end()-1;
+                        }
+                    } else if (distance<=scale*noiserad){
+                        printf("cluster not free \n");
+                        candidate=2;
+                        it_nextev = comp_set->end()-1;
+                    }
+                }
+                if (candidate ==1){
+                    printf("continue to cluster \n");
+                    //open evidenceset(count)
+                } else {
+                    printf("cluster ends \n");
+                    // if cluster, remove cluster
+                    count = setsize;
+                }
+            }
         }
 
-        // zoek in 2 tm 5 of punt binnen noise
-        // En rest buiten noise
-        // roep: 'cluster'
+
     }
 
 //    printf("Set consists of: \n");

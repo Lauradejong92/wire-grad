@@ -25,6 +25,8 @@ public:
 
     virtual ~EvidenceStorage();
 
+    pbl::Vector getPos(EvidenceSet::const_iterator it_ev);
+
     void cluster();
 
     /**
