@@ -123,10 +123,31 @@ void EvidenceStorage::cluster(int setsize) {
 
     evidenceSet_.push_back(ev_set);
 
-    if (evidenceSet_.size()>setsize){
-        evidenceSet_.erase(evidenceSet_.begin());
+    //Bevat de positie
+    for(EvidenceSet::const_iterator it_ev = ev_set->begin(); it_ev != ev_set->end(); ++it_ev) {
+        Evidence* example = *it_ev;
+        if (example->getProperty("position") == 0) {
+            printf("no position added \n");
+            //deze zie je dus nooit
+        }
     }
 
+    printf("evidence set now: %i \n",evidenceSet_.size());
+    //En, position is weg:
+    EvidenceSet* origin_set= *evidenceSet_.begin();
+    for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
+        Evidence* myEv= *it_ev;
+        if (myEv->getProperty("position")==0){
+            printf("no position \n");
+        }
+        //const Property* prop_seed = myEv->getProperty("position");
+
+    }
+
+
+//    if (evidenceSet_.size()>setsize){
+//        evidenceSet_.erase(evidenceSet_.begin());
+//    }
 }
 
 unsigned int EvidenceStorage::size() const {

@@ -63,6 +63,7 @@ void generateEvidence() {
 
 	// Add evidence
 	addEvidence(world_evidence, 2, 2.2, 3, "mug", "red");
+    //addEvidence(world_evidence, 3, 2.2, 3, "mug", "red");
 
 	// Publish results
 	world_evidence_publisher_.publish(world_evidence);

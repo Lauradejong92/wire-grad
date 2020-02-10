@@ -77,7 +77,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //Add evidence to storage ???
     EvidenceSet* my_set = new EvidenceSet(ev_set);
     EvidenceStorage::getInstance().add(my_set,setsize);
-    EvidenceStorage::getInstance().cluster(setsize);
+    //EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
@@ -91,7 +91,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //Clusterbased pruning
     //Cluster forming
 
-    pruneClusterwise();
+    //pruneClusterwise();
 
     pruneTree(ev_set.getTimestamp());
 
@@ -108,6 +108,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("*** Free memory: assignment matrices ***\n");
 
     ++n_updates_;
+
+    showStatistics();
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
@@ -417,8 +419,9 @@ const std::list<SemanticObject*>& HypothesisTree::getMAPObjects() const {
 
 void HypothesisTree::showStatistics() {
     std::cout << "   Number of hypotheses        = " << leafs_.size() << std::endl;
-    std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
-    std::cout << "   Tree height                 = " << tree_height_ << std::endl;
+    //std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
+    //std::cout << "   Tree height                 = " << tree_height_ << std::endl;
+    std::cout << "----" << std::endl;
 }
 
 }
