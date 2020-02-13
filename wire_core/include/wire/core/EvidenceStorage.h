@@ -7,7 +7,7 @@
 
 namespace mhf {
 
-class Evidence;
+    class Evidence;
 
 /**
  * EvidenceStorage.cpp
@@ -16,61 +16,63 @@ class Evidence;
  *      Author: ls de Jong
  *      origin: sdries
  */
-class EvidenceStorage {
+    class EvidenceStorage {
 
-public:
+    public:
 
-    static EvidenceStorage& getInstance();
+        static EvidenceStorage& getInstance();
 
 
-    virtual ~EvidenceStorage();
+        virtual ~EvidenceStorage();
 
-    pbl::Vector getPos(EvidenceSet::const_iterator it_ev);
+        pbl::Vector getPos(EvidenceSet::const_iterator it_ev);
 
-    void cluster(int setsize);
+        void cluster(int setsize);
 
-    /**
-     * @brief Adds evidence to the evidence set
-     * @param ev The evidence
-     */
-    void add(EvidenceSet* ev_set, int setsize);
+        /**
+         * @brief Adds evidence to the evidence set
+         * @param ev The evidence
+         */
+        void add(const EvidenceSet& ev_set, int setsize);
 
-    /**
-     * @brief Returns the number of evidence items in the set
-     * @return The number of evidence items in the set
-     */
-    unsigned int size() const;
+        /**
+         * @brief Returns the number of evidence items in the set
+         * @return The number of evidence items in the set
+         */
+        unsigned int size() const;
 
-    /**
-     * @brief Returns the time from which all evidence in the set originates
-     * @return The time from which all evidence in the set originates
-     */
-    const Time& getTimestamp() const;
+        /**
+         * @brief Returns the time from which all evidence in the set originates
+         * @return The time from which all evidence in the set originates
+         */
+        const Time& getTimestamp() const;
 
-    /**
-     *  Returns a read-only (constant) iterator that points to the
-     *  first evidence item in the evidence set
-     */
-    std::vector<EvidenceSet*>::const_iterator begin() const;
+        /**
+         *  Returns a read-only (constant) iterator that points to the
+         *  first evidence item in the evidence set
+         */
+        std::vector<EvidenceSet>::const_iterator begin() const;
 
-    /**
-     *  Returns a read-only (constant) iterator that points one past the
-     * last evidence item in the evidence set
-     */
-    std::vector<EvidenceSet*>::const_iterator end() const;
+        /**
+         *  Returns a read-only (constant) iterator that points one past the
+         * last evidence item in the evidence set
+         */
+        std::vector<EvidenceSet>::const_iterator end() const;
 
-    typedef std::vector<EvidenceSet*>::const_iterator const_iterator;
 
-protected:
-    EvidenceStorage();
-    static EvidenceStorage* instance_;
-    /// The time from which all evidence in the set originates
-    Time timestamp_;
+        typedef std::vector<EvidenceSet>::const_iterator const_iterator;
 
-    /// Collection of evidence items
-    std::vector<EvidenceSet*> evidenceSet_;
+    protected:
+        EvidenceStorage();
+        static EvidenceStorage* instance_;
+        /// The time from which all evidence in the set originates
+        Time timestamp_;
 
-};
+        /// Collection of evidence items
+        std::vector<EvidenceSet> evidenceSet_;
+        std::map<Time, std::vector<Evidence>> evidenceMap;
+
+    };
 
 }
 

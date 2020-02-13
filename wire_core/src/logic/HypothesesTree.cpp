@@ -75,8 +75,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
     //Add evidence to storage ???
-    EvidenceSet* my_set = new EvidenceSet(ev_set);
-    EvidenceStorage::getInstance().add(my_set,setsize);
+    //EvidenceSet* my_set = new EvidenceSet(ev_set);
+    EvidenceStorage::getInstance().add(ev_set,setsize);
     //EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
@@ -123,7 +123,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 /* *                         PROTECTED MHT OPERATIONS                           * */
 /* ****************************************************************************** */
 
-struct compareAssignmentSets {
+    struct compareAssignmentSets {
     bool operator()(const AssignmentSet* a1, const AssignmentSet* a2) const {
         return a1->getProbability() < a2->getProbability();
    }

@@ -15,12 +15,12 @@
 
 namespace mhf {
 
-EvidenceStorage::EvidenceStorage() : timestamp_(-1) {
-}
+    EvidenceStorage::EvidenceStorage() : timestamp_(-1) {
+    }
 
-EvidenceStorage* EvidenceStorage::instance_ = 0;
+    EvidenceStorage* EvidenceStorage::instance_ = 0;
 
-EvidenceStorage& EvidenceStorage::getInstance() {
+    EvidenceStorage& EvidenceStorage::getInstance() {
         if (instance_) {
             return *instance_;
         }
@@ -29,142 +29,183 @@ EvidenceStorage& EvidenceStorage::getInstance() {
     }
 
 
-EvidenceStorage::~EvidenceStorage() {
-}
+    EvidenceStorage::~EvidenceStorage() {
+    }
 
-pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
+    pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
 
-    Evidence* seed = *it_ev;
-    const Property* prop_seed = seed->getProperty("position");
-    //printf("1");
+        Evidence* seed = *it_ev;
+        const Property* prop_seed = seed->getProperty("position");
+        //printf("1");
 //// TODO hier gaat het dus mis bij 1 evidence:
-    const pbl::PDF& pdf_seed = prop_seed->getValue();
-    //printf("2");
-    //printf("check: \n");
-    const pbl::Gaussian* gauss_seed = pbl::PDFtoGaussian(pdf_seed);
-    const pbl::Vector& pos = gauss_seed->getMean();
+        const pbl::PDF& pdf_seed = prop_seed->getValue();
+        //printf("2");
+        //printf("check: \n");
+        const pbl::Gaussian* gauss_seed = pbl::PDFtoGaussian(pdf_seed);
+        const pbl::Vector& pos = gauss_seed->getMean();
 
-    //printf(" - position: (%f,%f,%f) \n", pos(0), pos(1), pos(2));
+        //printf(" - position: (%f,%f,%f) \n", pos(0), pos(1), pos(2));
 
-    return pos;
-}
+        return pos;
+    }
 
-void EvidenceStorage::cluster(int setsize) {
+    void EvidenceStorage::cluster(int setsize) {
 
-    //int setsize= 5;
-    float sigma = 0.005;
-    int scale = 5;//3
+        //int setsize= 5;
+        float sigma = 0.005;
+        int scale = 5;//3
 
-    if (evidenceSet_.size()>=setsize){
-        //printf("Start clustering: \n");
+        if (evidenceSet_.size()>=setsize){
+            //printf("Start clustering: \n");
 
-        //For oldest set (= at time-setsize)
-        EvidenceSet* origin_set = new EvidenceSet(**evidenceSet_.begin());
-        //printf ("size: %i", origin_set->size());
-        for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
-            EvidenceSet* cluster = new EvidenceSet();
-            cluster->add(*it_ev);
+            //For oldest set (= at time-setsize)
+            EvidenceSet* origin_set = new EvidenceSet(*evidenceSet_.begin());
+            //printf ("size: %i", origin_set->size());
+            for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
+                EvidenceSet* cluster = new EvidenceSet();
+                cluster->add(*it_ev);
 
-            //find position of cluster seed of
-            pbl::Vector origin_pos =EvidenceStorage().getPos(it_ev);
+                //find position of cluster seed of
+                pbl::Vector origin_pos =EvidenceStorage().getPos(it_ev);
 
-            ////Compare to other points in time
-            for (int count=1; count< setsize;count++){
+                ////Compare to other points in time
+                for (int count=1; count< setsize;count++){
 
-                //open set
-                EvidenceSet* comp_set = new EvidenceSet(**(evidenceSet_.begin()+count));
-                int candidate = 0;
-                for(EvidenceSet::const_iterator it_nextev = comp_set->begin(); it_nextev != comp_set->end(); ++it_nextev) {
-                    //// Todo: If appearance is equal
-                    pbl::Vector next_pos =EvidenceStorage().getPos(it_nextev);
+                    //open set
+                    EvidenceSet* comp_set = new EvidenceSet(*(evidenceSet_.begin()+count));
+                    int candidate = 0;
+                    for(EvidenceSet::const_iterator it_nextev = comp_set->begin(); it_nextev != comp_set->end(); ++it_nextev) {
+                        //// Todo: If appearance is equal
+                        pbl::Vector next_pos =EvidenceStorage().getPos(it_nextev);
 
-                    //// TODO calculate distance in 3D
-                    float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
-                    //printf("distance = %f \n",distance);
+                        //// TODO calculate distance in 3D
+                        float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
+                        //printf("distance = %f \n",distance);
 
-                    if (candidate == 0){
-                        if (distance<=sigma){
-                            //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
-                            candidate=1;
-                            cluster->add(*it_nextev);
+                        if (candidate == 0){
+                            if (distance<=sigma){
+                                //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
+                                candidate=1;
+                                cluster->add(*it_nextev);
 
+                            } else if (distance<=scale*sigma){
+                                //printf("cluster not free \n");
+                                candidate=2;
+                                it_nextev = comp_set->end()-1;
+                            }
                         } else if (distance<=scale*sigma){
                             //printf("cluster not free \n");
                             candidate=2;
                             it_nextev = comp_set->end()-1;
                         }
-                    } else if (distance<=scale*sigma){
-                        //printf("cluster not free \n");
-                        candidate=2;
-                        it_nextev = comp_set->end()-1;
+                    }
+
+                    if (candidate !=1){
+                        //terminate early
+                        count = setsize;
                     }
                 }
 
-                if (candidate !=1){
-                    //terminate early
-                    count = setsize;
+                //when full cluster is found, add to storage
+                if (cluster->size()==setsize){
+                    ClusterStorage::getInstance().add(cluster);
+                    //printf("lalala %i \n",ClusterStorage::getInstance().size());
                 }
             }
 
-            //when full cluster is found, add to storage
-            if (cluster->size()==setsize){
-               ClusterStorage::getInstance().add(cluster);
-               //printf("lalala %i \n",ClusterStorage::getInstance().size());
+
+        }
+
+    }
+
+    void EvidenceStorage::add(const EvidenceSet& ev_set,int setsize) {
+        //int setsize= 5; //Number of points in historic cluster
+
+        std::vector<Evidence> evidence_vector;
+        for (const auto& ev : ev_set)
+        {
+            evidence_vector.emplace_back(*ev);
+        }
+        evidenceMap[ev_set.getTimestamp()] = evidence_vector;
+
+        for (const auto ev : evidence_vector)
+        {
+            if (!ev.getProperty("position"))
+            {
+                printf("no position added \n");
+                //deze zie je dus nooit
+            } else{
+                printf("Position added \n");
             }
         }
 
-
-    }
-
-}
-
-    void EvidenceStorage::add(EvidenceSet* ev_set,int setsize) {
-    //int setsize= 5; //Number of points in historic cluster
-
-    evidenceSet_.push_back(ev_set);
-
-    //Bevat de positie
-    for(EvidenceSet::const_iterator it_ev = ev_set->begin(); it_ev != ev_set->end(); ++it_ev) {
-        Evidence* example = *it_ev;
-        if (example->getProperty("position") == 0) {
-            printf("no position added \n");
-            //deze zie je dus nooit
+        printf("evidenceMap size is %zu \n", evidenceMap.size());
+        for (const auto& kv : evidenceMap)
+        {
+            for (const auto& ev : kv.second)
+            {
+                if (!ev.getProperty("position"))
+                {
+                    printf(" position not available \n");
+                    //deze zie je dus nooit
+                }
+            }
+//        break;
         }
-    }
 
-    printf("evidence set now: %i \n",evidenceSet_.size());
-    //En, position is weg:
-    EvidenceSet* origin_set= *evidenceSet_.begin();
-    for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
-        Evidence* myEv= *it_ev;
-        if (myEv->getProperty("position")==0){
-            printf("no position \n");
-        }
-        //const Property* prop_seed = myEv->getProperty("position");
 
-    }
+        /*
+          evidenceSet_.emplace_back(ev_set);
+        printf("ev_set size is %zu \n", evidenceSet_.size());
+
+          for (const auto evidence : ev_set)
+          {
+              if (!evidence->getProperty("position"))
+              {
+                  printf("no position added \n");
+                  //deze zie je dus nooit
+              } else{
+                printf("Position added \n");
+              }
+          }
+
+          //Bevat de positie
+          EvidenceSet origin_set = evidenceSet_.front();
+          printf("orig_set size is %zu \n", evidenceSet_.size());
+          for (const Evidence* evidence : origin_set)
+          {
+              if (!evidence->getProperty("position"))
+              {
+                  printf("no position \n");
+              } else{
+                printf("Position found \n");
+              }
+              //const Property* prop_seed = myEv->getProperty("position");
+
+          }
+          */
 
 
 //    if (evidenceSet_.size()>setsize){
 //        evidenceSet_.erase(evidenceSet_.begin());
 //    }
-}
+    }
 
-unsigned int EvidenceStorage::size() const {
-    return evidenceSet_.size();
-}
+    unsigned int EvidenceStorage::size() const {
+        return evidenceSet_.size();
+    }
 
-const Time& EvidenceStorage::getTimestamp() const {
+    const Time& EvidenceStorage::getTimestamp() const {
         return timestamp_;
     }
 
 
-std::vector<EvidenceSet*>::const_iterator EvidenceStorage::begin() const {
-    return evidenceSet_.begin();
-}
+    std::vector<EvidenceSet>::const_iterator EvidenceStorage::begin() const {
+        return evidenceSet_.begin();
+    }
 
-std::vector<EvidenceSet*>::const_iterator EvidenceStorage::end() const {
-    return evidenceSet_.end();
-}
+    std::vector<EvidenceSet>::const_iterator EvidenceStorage::end() const {
+        return evidenceSet_.end();
+    }
 
 }
