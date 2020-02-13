@@ -25,7 +25,7 @@ namespace mhf {
 
         virtual ~EvidenceStorage();
 
-        pbl::Vector getPos(EvidenceSet::const_iterator it_ev);
+        pbl::Vector getPos(const Evidence* ev);
 
         void cluster(int setsize);
 

@@ -32,17 +32,17 @@ namespace mhf {
     EvidenceStorage::~EvidenceStorage() {
     }
 
-    pbl::Vector EvidenceStorage::getPos(EvidenceSet::const_iterator it_ev){
+    pbl::Vector EvidenceStorage::getPos(const Evidence* ev){
 
-        Evidence* seed = *it_ev;
-        const Property* prop_seed = seed->getProperty("position");
+        //Evidence* seed = *ev;
+        const Property* prop = ev->getProperty("position");
         //printf("1");
 //// TODO hier gaat het dus mis bij 1 evidence:
-        const pbl::PDF& pdf_seed = prop_seed->getValue();
+        const pbl::PDF& pdf = prop->getValue();
         //printf("2");
         //printf("check: \n");
-        const pbl::Gaussian* gauss_seed = pbl::PDFtoGaussian(pdf_seed);
-        const pbl::Vector& pos = gauss_seed->getMean();
+        const pbl::Gaussian* gauss = pbl::PDFtoGaussian(pdf);
+        const pbl::Vector& pos = gauss->getMean();
 
         //printf(" - position: (%f,%f,%f) \n", pos(0), pos(1), pos(2));
 
@@ -52,75 +52,63 @@ namespace mhf {
     void EvidenceStorage::cluster(int setsize) {
 
         //int setsize= 5;
-        float sigma = 0.005;
+        float sigma = 0.5005;
         int scale = 5;//3
 
-        if (evidenceSet_.size()>=setsize){
-            //printf("Start clustering: \n");
+        if (evidenceMap.size()>=setsize){
+            printf("Start clustering: \n");
 
             //For oldest set (= at time-setsize)
-            EvidenceSet* origin_set = new EvidenceSet(*evidenceSet_.begin());
-            //printf ("size: %i", origin_set->size());
-            for(EvidenceSet::const_iterator it_ev = origin_set->begin(); it_ev != origin_set->end(); ++it_ev) {
-                EvidenceSet* cluster = new EvidenceSet();
-                cluster->add(*it_ev);
+            for (const auto seed_ev : evidenceMap.begin()->second){
+                std::vector<Evidence> cluster_vector;
+                cluster_vector.emplace_back(seed_ev);
+                //printf("cluster size: %i",cluster_vector.size());
 
                 //find position of cluster seed of
-                pbl::Vector origin_pos =EvidenceStorage().getPos(it_ev);
+                pbl::Vector origin_pos =EvidenceStorage().getPos(&seed_ev);
 
-                ////Compare to other points in time
-                for (int count=1; count< setsize;count++){
-
-                    //open set
-                    EvidenceSet* comp_set = new EvidenceSet(*(evidenceSet_.begin()+count));
+                //Compare to other points in time
+                for(const auto next_ev_set : evidenceMap){ //evidence set from time t
+                    ////todo moet eigenlijk op t+1 starten
                     int candidate = 0;
-                    for(EvidenceSet::const_iterator it_nextev = comp_set->begin(); it_nextev != comp_set->end(); ++it_nextev) {
-                        //// Todo: If appearance is equal
-                        pbl::Vector next_pos =EvidenceStorage().getPos(it_nextev);
-
-                        //// TODO calculate distance in 3D
+                    for (const auto next_ev: next_ev_set.second){ //evidence from time t
+                        //printf("a");
+                        pbl::Vector next_pos =EvidenceStorage().getPos(&next_ev);
                         float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
-                        //printf("distance = %f \n",distance);
+                        printf("distance = %f \n",distance);
 
                         if (candidate == 0){
                             if (distance<=sigma){
                                 //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                                 candidate=1;
-                                cluster->add(*it_nextev);
+
+                                //cluster->add(*it_nextev);
 
                             } else if (distance<=scale*sigma){
-                                //printf("cluster not free \n");
+                                printf("cluster not free \n");
                                 candidate=2;
-                                it_nextev = comp_set->end()-1;
+                                //next_ev = next_ev_se
                             }
                         } else if (distance<=scale*sigma){
-                            //printf("cluster not free \n");
+                            printf("cluster not free \n");
                             candidate=2;
-                            it_nextev = comp_set->end()-1;
+                            //next_ev = next_ev_set.second->end()-1;
                         }
                     }
+                    printf("Flag \n");
 
                     if (candidate !=1){
                         //terminate early
-                        count = setsize;
+                        //count = setsize;
                     }
-                }
 
-                //when full cluster is found, add to storage
-                if (cluster->size()==setsize){
-                    ClusterStorage::getInstance().add(cluster);
-                    //printf("lalala %i \n",ClusterStorage::getInstance().size());
                 }
             }
-
-
         }
 
     }
 
     void EvidenceStorage::add(const EvidenceSet& ev_set,int setsize) {
-        //int setsize= 5; //Number of points in historic cluster
-
         std::vector<Evidence> evidence_vector;
         for (const auto& ev : ev_set)
         {
@@ -128,67 +116,23 @@ namespace mhf {
         }
         evidenceMap[ev_set.getTimestamp()] = evidence_vector;
 
-        for (const auto ev : evidence_vector)
-        {
-            if (!ev.getProperty("position"))
-            {
-                printf("no position added \n");
-                //deze zie je dus nooit
-            } else{
-                printf("Position added \n");
-            }
+//        for (const auto ev : evidence_vector)
+//        {
+//            if (!ev.getProperty("position"))
+//            {
+//                printf("no position added \n");
+//                //deze zie je dus nooit
+//            } else{
+//                printf("Position added \n");
+//            }
+//        }
+
+
+//      printf("evidenceMap size is %zu \n", evidenceMap.size());
+        if (evidenceMap.size()>setsize){
+            //evidenceSet_.erase(evidenceSet_.begin());
+            evidenceMap.erase(evidenceMap.begin());
         }
-
-        printf("evidenceMap size is %zu \n", evidenceMap.size());
-        for (const auto& kv : evidenceMap)
-        {
-            for (const auto& ev : kv.second)
-            {
-                if (!ev.getProperty("position"))
-                {
-                    printf(" position not available \n");
-                    //deze zie je dus nooit
-                }
-            }
-//        break;
-        }
-
-
-        /*
-          evidenceSet_.emplace_back(ev_set);
-        printf("ev_set size is %zu \n", evidenceSet_.size());
-
-          for (const auto evidence : ev_set)
-          {
-              if (!evidence->getProperty("position"))
-              {
-                  printf("no position added \n");
-                  //deze zie je dus nooit
-              } else{
-                printf("Position added \n");
-              }
-          }
-
-          //Bevat de positie
-          EvidenceSet origin_set = evidenceSet_.front();
-          printf("orig_set size is %zu \n", evidenceSet_.size());
-          for (const Evidence* evidence : origin_set)
-          {
-              if (!evidence->getProperty("position"))
-              {
-                  printf("no position \n");
-              } else{
-                printf("Position found \n");
-              }
-              //const Property* prop_seed = myEv->getProperty("position");
-
-          }
-          */
-
-
-//    if (evidenceSet_.size()>setsize){
-//        evidenceSet_.erase(evidenceSet_.begin());
-//    }
     }
 
     unsigned int EvidenceStorage::size() const {
