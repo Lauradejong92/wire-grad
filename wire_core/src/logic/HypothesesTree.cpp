@@ -91,7 +91,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //Clusterbased pruning
     //Cluster forming
 
-    pruneClusterwise();
+    pruneClusterwise(setsize);
 
     pruneTree(ev_set.getTimestamp());
 
@@ -384,8 +384,45 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
     DEBUG_INFO("pruneTree - end\n");
 }
 
-void HypothesisTree::pruneClusterwise() {
-    printf("Test123 \n");
+void HypothesisTree::pruneClusterwise(int setsize) {
+    //Hypothesis* hyp = root_;
+    //Todo: store assignments for hypotheses
+    if (root_->getHeight()>=setsize){
+        //printf("height %i", root_->getHeight());
+
+        //Todo vind kids met precies de goede height
+        //root_->getChildHypotheses()
+
+        //per cluster (nummer x)
+            //for each of these kids
+                //voor alle evidence
+                    // if cluster(t0, nummer 1) == evidence
+                        //save object adress
+
+                        //nu kids doorzoeken
+                            //for all kids
+                            // for ev = cluster(tx, nummer 1)
+                            // if verwijzing is naar objectadres
+                                // op naar de volgende
+                       // niets gevonden, dan break;
+
+    }
+
+
+    //Todo: voorbeelde voor 1 leaf:
+    Hypothesis* hyp = leafs_.front();
+    printf("lala%i", hyp->getHeight());
+
+    const AssignmentSet* myset= hyp->getAssignments();
+    for (int k=0; k<myset->getNumMeasurements();k++ ) {
+        const Assignment &myassi = myset->getMeasurementAssignment(k);
+        std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
+        std::cout << "Object:"<< myassi.getTarget() << std::endl;
+    }
+
+    const Hypothesis* par = hyp->getParent();
+    //if evidence gelijk
+    //if target nummer is als eerder
 }
 
 /* ****************************************************************************** */

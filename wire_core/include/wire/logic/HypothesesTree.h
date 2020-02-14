@@ -139,7 +139,7 @@ protected:
     void pruneTree(const Time& timestamp);
 
     // Prune tree based on clusters
-    void pruneClusterwise();
+    void pruneClusterwise(int setsize);
 
 };
 
