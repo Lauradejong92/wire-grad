@@ -52,56 +52,66 @@ namespace mhf {
     void EvidenceStorage::cluster(int setsize) {
 
         //int setsize= 5;
-        float sigma = 0.5005;
+        float sigma = 0.005;
         int scale = 5;//3
 
         if (evidenceMap.size()>=setsize){
-            printf("Start clustering: \n");
+            // remove old clusters
+            ClusterStorage::getInstance().clear();
+            //printf("Start clustering: \n");
 
             //For oldest set (= at time-setsize)
             for (const auto seed_ev : evidenceMap.begin()->second){
                 std::vector<Evidence> cluster_vector;
-                cluster_vector.emplace_back(seed_ev);
+                //cluster_vector.emplace_back(seed_ev);
                 //printf("cluster size: %i",cluster_vector.size());
 
+                //todo: check appearance similarity
                 //find position of cluster seed of
                 pbl::Vector origin_pos =EvidenceStorage().getPos(&seed_ev);
 
                 //Compare to other points in time
                 for(const auto next_ev_set : evidenceMap){ //evidence set from time t
-                    ////todo moet eigenlijk op t+1 starten
                     int candidate = 0;
                     for (const auto next_ev: next_ev_set.second){ //evidence from time t
                         //printf("a");
+                        //printf("loop 3");
                         pbl::Vector next_pos =EvidenceStorage().getPos(&next_ev);
                         float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
-                        printf("distance = %f \n",distance);
-
+                        //printf("distance = %f \n",distance);
+                        //todo: more fancy clustering & comparison than first position compared to all
                         if (candidate == 0){
                             if (distance<=sigma){
                                 //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                                 candidate=1;
-
-                                //cluster->add(*it_nextev);
+                                cluster_vector.emplace_back(seed_ev);
 
                             } else if (distance<=scale*sigma){
-                                printf("cluster not free \n");
+                                printf("cluster not free 1 \n");
                                 candidate=2;
-                                //next_ev = next_ev_se
+                                break;
                             }
                         } else if (distance<=scale*sigma){
-                            printf("cluster not free \n");
+                            printf("cluster not free 2\n");
                             candidate=2;
-                            //next_ev = next_ev_set.second->end()-1;
+                            break;
+
                         }
                     }
-                    printf("Flag \n");
+                    //printf("Flag \n");
 
                     if (candidate !=1){
                         //terminate early
-                        //count = setsize;
+                        //printf("Seed forms no cluster \n");
+                        cluster_vector.clear();
+                        break;
                     }
 
+                }
+
+                if (cluster_vector.size()){
+                    //printf("cluster found! \n");
+                    ClusterStorage::getInstance().add(cluster_vector);
                 }
             }
         }

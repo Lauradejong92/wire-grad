@@ -25,7 +25,9 @@ public:
 
     virtual ~ClusterStorage();
 
-    void add(EvidenceSet* ev_set);
+    void add(std::vector<Evidence> ev_set);
+
+    void clear();
 
     unsigned int size() const;
 
@@ -35,15 +37,15 @@ public:
      *  Returns a read-only (constant) iterator that points to the
      *  first evidence item in the evidence set
      */
-    std::vector<EvidenceSet*>::const_iterator begin() const;
+    std::vector<std:: vector<Evidence>>::const_iterator begin() const;
 
     /**
      *  Returns a read-only (constant) iterator that points one past the
      * last evidence item in the evidence set
      */
-    std::vector<EvidenceSet*>::const_iterator end() const;
+    std::vector<std:: vector<Evidence>>::const_iterator end() const;
 
-    typedef std::vector<EvidenceSet*>::const_iterator const_iterator;
+    typedef std::vector<std:: vector<Evidence>>::const_iterator const_iterator;
 
 protected:
     ClusterStorage();
@@ -52,7 +54,7 @@ protected:
     Time timestamp_;
 
     /// Collection of evidence items
-    std::vector<EvidenceSet*> clusterSet_;
+    std::vector<std:: vector<Evidence>> clusterSet_;
 
 };
 

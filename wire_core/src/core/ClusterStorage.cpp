@@ -31,10 +31,13 @@ ClusterStorage& ClusterStorage::getInstance() {
 ClusterStorage::~ClusterStorage() {
 }
 
-void ClusterStorage::add(EvidenceSet* ev_set) {
+void ClusterStorage::add(std::vector<Evidence> ev_set) {
    clusterSet_.push_back(ev_set);
-
 }
+
+void ClusterStorage::clear() {
+        clusterSet_.clear();
+    }
 
 unsigned int ClusterStorage::size() const {
     return clusterSet_.size();
@@ -45,11 +48,11 @@ const Time& ClusterStorage::getTimestamp() const {
     }
 
 
-std::vector<EvidenceSet*>::const_iterator ClusterStorage::begin() const {
+    std::vector<std:: vector<Evidence>>::const_iterator ClusterStorage::begin() const {
     return clusterSet_.begin();
 }
 
-std::vector<EvidenceSet*>::const_iterator ClusterStorage::end() const {
+    std::vector<std:: vector<Evidence>>::const_iterator ClusterStorage::end() const {
     return clusterSet_.end();
 }
 
