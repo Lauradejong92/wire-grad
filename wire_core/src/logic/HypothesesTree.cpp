@@ -385,31 +385,70 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 }
 
 void HypothesisTree::pruneClusterwise(int setsize) {
-    //Hypothesis* hyp = root_;
-    //Todo: store assignments for hypotheses
-    if (root_->getHeight()>=setsize){
-        //printf("height %i", root_->getHeight());
+//    Hypothesis* hyp = root_;
+//    printf("assignments: %i \n", hyp->getAssignmentMatrix()->getNumMeasurements());
 
-        //Todo vind kids met precies de goede height
-        //root_->getChildHypotheses()
+//
+//    const Assignment &myassi = hyp->getAssignmentMatrix()->getAssignment(0,0);
+//        std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
+//        std::cout << "Object:"<< myassi.getTarget() << std::endl;
 
-        //for all clusters
-        for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++){
-            //for each hyp
-            for (int t=setsize-1;t>-1;t--){
-                //printf("%i",t);
-                const Evidence* clusterev= ClusterStorage::getInstance().getEvidence(n_cluster,t);
-                std::cout << "Evidence:"<< ClusterStorage::getInstance().getEvidence(n_cluster,t) << std::endl;
-                //for active hypothesis
-                    //first:
-                    // if clusterev == hypothesis evidence
-                        //save object
-                    //second:
-                    // if clusterev == hypothesis
-                        //if obj = savedobj
-                        
+    if (root_->getHeight()>=setsize && ClusterStorage::getInstance().size()>0){ //only clustering when enough datapoints & a cluster is available
+
+        //Find set with the right height
+        std::list<Hypothesis*> hyp_stack;
+        hyp_stack.push_back(root_);
+
+        while(!hyp_stack.empty()) {
+            Hypothesis* hyp = hyp_stack.front();
+            if (hyp_stack.front()->getHeight() <= setsize) {
+                //printf("stacksize ends = %i \n", hyp_stack.size());
+                break;
+            }
+
+            hyp_stack.pop_front();
+
+            std::list<Hypothesis*>& children = hyp->getChildHypotheses();
+            if (!children.empty()) {
+                for (const auto it_child: children) {
+                    hyp_stack.push_back(it_child);
+                }
+                //printf("stacksize = %i \n", hyp_stack.size());
             }
         }
+
+        //Search for hypotheses confirming the cluster
+        for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++) {
+            //find seed
+            const Evidence *clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize);
+
+            //find hyps
+            for(const auto hyps : hyp_stack){
+                const Assignment &myassi = hyps->getAssignmentMatrix()->getAssignment(0,0);
+                std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
+                //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+                std::cout << "Cluster seed:"<< clusterev << std::endl;
+                if (myassi.getEvidence()==clusterev){
+                    printf("hoera!\n \n");
+                }
+            }
+
+            //check if a child obays all
+
+
+
+                //std::cout << "Evidence:"<< ClusterStorage::getInstance().getEvidence(n_cluster,t) << std::endl;
+                //Hypothesis *hyp = hyp_stack.front();
+        }
+                    //first:
+                    // if clusterev == hypothesis evidence
+                        //get object id
+                    //second:
+                    // if clusterev == hypothesis
+                        //if obj_id = savedobj_id
+
+
+
 
                 //voor alle evidence
 
