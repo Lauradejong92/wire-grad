@@ -22,8 +22,9 @@ public:
 
     static ClusterStorage& getInstance();
 
-
     virtual ~ClusterStorage();
+
+    const Evidence* getEvidence (int set, int place) const;
 
     void add(std::vector<Evidence> ev_set);
 

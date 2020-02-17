@@ -27,9 +27,14 @@ ClusterStorage& ClusterStorage::getInstance() {
         return *instance_;
     }
 
+    ClusterStorage::~ClusterStorage() {
+    }
 
-ClusterStorage::~ClusterStorage() {
-}
+const Evidence* ClusterStorage::getEvidence (int set, int place) const {
+        return &clusterSet_[set][place];
+    }
+
+
 
 void ClusterStorage::add(std::vector<Evidence> ev_set) {
    clusterSet_.push_back(ev_set);

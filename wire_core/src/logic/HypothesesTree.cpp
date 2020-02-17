@@ -393,10 +393,26 @@ void HypothesisTree::pruneClusterwise(int setsize) {
         //Todo vind kids met precies de goede height
         //root_->getChildHypotheses()
 
-        //per cluster (nummer x)
-            //for each of these kids
+        //for all clusters
+        for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++){
+            //for each hyp
+            for (int t=setsize-1;t>-1;t--){
+                //printf("%i",t);
+                const Evidence* clusterev= ClusterStorage::getInstance().getEvidence(n_cluster,t);
+                std::cout << "Evidence:"<< ClusterStorage::getInstance().getEvidence(n_cluster,t) << std::endl;
+                //for active hypothesis
+                    //first:
+                    // if clusterev == hypothesis evidence
+                        //save object
+                    //second:
+                    // if clusterev == hypothesis
+                        //if obj = savedobj
+                        
+            }
+        }
+
                 //voor alle evidence
-                    // if cluster(t0, nummer 1) == evidence
+
                         //save object adress
 
                         //nu kids doorzoeken
@@ -406,21 +422,24 @@ void HypothesisTree::pruneClusterwise(int setsize) {
                                 // op naar de volgende
                        // niets gevonden, dan break;
 
+           //de juiste gevonden?
+           //iets doen met alle onjuisten
+
     }
 
 
     //Todo: voorbeelde voor 1 leaf:
-    Hypothesis* hyp = leafs_.front();
-    printf("lala%i", hyp->getHeight());
-
-    const AssignmentSet* myset= hyp->getAssignments();
-    for (int k=0; k<myset->getNumMeasurements();k++ ) {
-        const Assignment &myassi = myset->getMeasurementAssignment(k);
-        std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
-        std::cout << "Object:"<< myassi.getTarget() << std::endl;
-    }
-
-    const Hypothesis* par = hyp->getParent();
+//    Hypothesis* hyp = leafs_.front();
+//    //printf("lala%i", hyp->getHeight());
+//
+//    const AssignmentSet* myset= hyp->getAssignments();
+//    for (int k=0; k<myset->getNumMeasurements();k++ ) {
+//        const Assignment &myassi = myset->getMeasurementAssignment(k);
+//        //std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
+//        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+//    }
+//
+//    const Hypothesis* par = hyp->getParent();
     //if evidence gelijk
     //if target nummer is als eerder
 }
