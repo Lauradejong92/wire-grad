@@ -84,7 +84,7 @@ namespace mhf {
                             if (distance<=sigma){
                                 //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                                 candidate=1;
-                                cluster_vector.emplace_back(seed_ev);
+                                cluster_vector.emplace_back(next_ev);
 
                             } else if (distance<=scale*sigma){
                                 printf("cluster not free 1 \n");
