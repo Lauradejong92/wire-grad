@@ -424,12 +424,16 @@ void HypothesisTree::pruneClusterwise(int setsize) {
 
             //find hyps
             for(const auto hyps : hyp_stack){
-                const Assignment &myassi = hyps->getAssignmentMatrix()->getAssignment(0,0);
-                std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
-                //std::cout << "Object:"<< myassi.getTarget() << std::endl;
-                std::cout << "Cluster seed:"<< clusterev << std::endl;
-                if (myassi.getEvidence()==clusterev){
-                    printf("hoera!\n \n");
+                for (int k = 0; k<hyps->getAssignmentMatrix()->getNumMeasurements();k++) {
+                    for (int l = 0; l<hyps->getAssignmentMatrix()->getNumAssignments(k);l++) {
+                        const Assignment &myassi = hyps->getAssignmentMatrix()->getAssignment(k, 0);
+                        std::cout << "Evidence:" << myassi.getEvidence() << " to seed" << clusterev << std::endl;
+                        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+                        //std::cout << "Cluster seed:" <<  << std::endl;
+                        if (myassi.getEvidence() == clusterev) {
+                            printf("hoera!\n \n");
+                        }
+                    }
                 }
             }
 
