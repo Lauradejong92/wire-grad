@@ -75,7 +75,6 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
     //Add evidence to storage ???
-    //EvidenceSet* my_set = new EvidenceSet(ev_set);
     EvidenceStorage::getInstance().add(ev_set,setsize);
     EvidenceStorage::getInstance().cluster(setsize);
 
@@ -396,44 +395,60 @@ void HypothesisTree::pruneClusterwise(int setsize) {
     if (root_->getHeight()>=setsize && ClusterStorage::getInstance().size()>0){ //only clustering when enough datapoints & a cluster is available
 
         //Find set with the right height
-        std::list<Hypothesis*> hyp_stack;
-        hyp_stack.push_back(root_);
+        std::map<int,Hypothesis*> hyp_stack;
+
+        hyp_stack[root_->getHeight()]=root_;
 
         while(!hyp_stack.empty()) {
-            Hypothesis* hyp = hyp_stack.front();
-            if (hyp_stack.front()->getHeight() <= setsize) {
+            //Save hyp with too large height
+            Hypothesis* hyp = hyp_stack.rbegin()->second;
+            printf("height: %i \n",hyp->getHeight());
+
+            //quit when right set is found
+            if (hyp_stack.rbegin()->first < setsize) {
                 //printf("stacksize ends = %i \n", hyp_stack.size());
                 break;
             }
 
-            hyp_stack.pop_front();
+            //remove hyp with too large height
+            hyp_stack.erase(prev(hyp_stack.end()));
 
+            //Extend set with children of hyp with too large height
             std::list<Hypothesis*>& children = hyp->getChildHypotheses();
             if (!children.empty()) {
                 for (const auto it_child: children) {
-                    hyp_stack.push_back(it_child);
+                        printf("add height: %i \n", it_child->getHeight());
+                        hyp_stack[it_child->getHeight()]=it_child;
                 }
-                //printf("stacksize = %i \n", hyp_stack.size());
             }
+
         }
 
-        //Search for hypotheses confirming the cluster
+ //       Search for hypotheses confirming the cluster
         for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++) {
+
             //find seed
             const Evidence *clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize);
+            std::cout << "Cluster seed:" << clusterev << std::endl;
+            //printf("number: %i \n", clusterev->getNumber());
 
-            //find hyps
+            //for all hyps
             for(const auto hyps : hyp_stack){
-                for (int k = 0; k<hyps->getAssignmentMatrix()->getNumMeasurements();k++) {
-                    for (int l = 0; l<hyps->getAssignmentMatrix()->getNumAssignments(k);l++) {
-                        const Assignment &myassi = hyps->getAssignmentMatrix()->getAssignment(k, 0);
-                        std::cout << "Evidence:" << myassi.getEvidence() << " to seed" << clusterev << std::endl;
-                        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
-                        //std::cout << "Cluster seed:" <<  << std::endl;
-                        if (myassi.getEvidence() == clusterev) {
-                            printf("hoera!\n \n");
-                        }
-                    }
+                printf("height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
+
+                //for all evidences in the hypothesis
+                for (int k = 0; k<hyps.second->getAssignmentMatrix()->getNumMeasurements();k++) {
+                    const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, 0);
+                        std::cout << "Evidence:" << myassi.getEvidence() << " with number" <<myassi.getEvidence()->getNumber() << std::endl;
+//                    for (int l = 0; l<hyps->getAssignmentMatrix()->getNumAssignments(k);l++) {
+//                        const Assignment &myassi = hyps->getAssignmentMatrix()->getAssignment(k, l);
+//                        std::cout << "Evidence:" << myassi.getEvidence() << " with number" <<myassi.getEvidence()->getNumber() << std::endl;
+//                        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+//                        //
+//                        if (myassi.getEvidence() == clusterev) {
+//                            printf("hoera!\n \n");
+//                        }
+//                    }
                 }
             }
 
