@@ -61,7 +61,7 @@ namespace mhf {
             //printf("Start clustering: \n");
 
             //For oldest set (= at time-setsize)
-            for (const auto seed_ev : evidenceMap.begin()->second){
+            for (const auto seed_ev : evidenceMap.begin()->second){ //todo test met: prev(evidenceMap.end()) ipv evidenceMap.begin()
                 std::vector<Evidence> cluster_vector;
                 //cluster_vector.emplace_back(seed_ev);
                 //printf("cluster size: %i",cluster_vector.size());
@@ -85,14 +85,15 @@ namespace mhf {
                                 //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                                 candidate=1;
                                 cluster_vector.emplace_back(next_ev);
+                                //std::cout << "          Evidence_check: " << next_ev.getAdress() << std::endl;
 
                             } else if (distance<=scale*sigma){
-                                printf("cluster not free 1 \n");
+                                //printf("cluster not free 1 \n");
                                 candidate=2;
                                 break;
                             }
                         } else if (distance<=scale*sigma){
-                            printf("cluster not free 2\n");
+                            //printf("cluster not free 2\n");
                             candidate=2;
                             break;
 
@@ -122,6 +123,7 @@ namespace mhf {
         std::vector<Evidence> evidence_vector;
         for (const auto& ev : ev_set)
         {
+            ev->setAdress(ev);
             evidence_vector.emplace_back(*ev);
         }
         evidenceMap[ev_set.getTimestamp()] = evidence_vector;

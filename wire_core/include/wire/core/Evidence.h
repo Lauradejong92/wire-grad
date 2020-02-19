@@ -69,12 +69,17 @@ public:
      */
     Evidence(Time timestamp);
 
-    virtual ~Evidence();    
+    virtual ~Evidence();
+
+    void setAdress(Evidence*);
+
+    Evidence* getAdress() const;
 
 protected:
 
     /// The time from which the evidence originates
     Time timestamp_;
+    Evidence* adress_;
 
 };
 

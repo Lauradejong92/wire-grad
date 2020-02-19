@@ -14,12 +14,20 @@ namespace mhf {
 
 int Evidence::N_EVIDENCE = 0;
 
-Evidence::Evidence(Time timestamp) : PropertySet(timestamp) {
+Evidence::Evidence(Time timestamp) : adress_(0), PropertySet(timestamp) {
     ++N_EVIDENCE;
 }
 
 Evidence::~Evidence() {
     --N_EVIDENCE;
+}
+
+void Evidence::setAdress(Evidence* adres){
+    adress_=adres;
+}
+
+Evidence* Evidence::getAdress() const{
+        return adress_;
 }
 
 }

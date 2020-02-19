@@ -81,6 +81,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
         ObjectStorage::getInstance().match(**it_ev);
+        std::cout << "Evidence_right: " << *it_ev << std::endl;
     }
 
     t_last_update_ = ev_set.getTimestamp();
@@ -402,7 +403,7 @@ void HypothesisTree::pruneClusterwise(int setsize) {
         while(!hyp_stack.empty()) {
             //Save hyp with too large height
             Hypothesis* hyp = hyp_stack.rbegin()->second;
-            printf("height: %i \n",hyp->getHeight());
+            //printf("height: %i \n",hyp->getHeight());
 
             //quit when right set is found
             if (hyp_stack.rbegin()->first < setsize) {
@@ -417,7 +418,7 @@ void HypothesisTree::pruneClusterwise(int setsize) {
             std::list<Hypothesis*>& children = hyp->getChildHypotheses();
             if (!children.empty()) {
                 for (const auto it_child: children) {
-                        printf("add height: %i \n", it_child->getHeight());
+                        //printf("add height: %i \n", it_child->getHeight());
                         hyp_stack[it_child->getHeight()]=it_child;
                 }
             }
@@ -428,27 +429,28 @@ void HypothesisTree::pruneClusterwise(int setsize) {
         for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++) {
 
             //find seed
-            const Evidence *clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize);
-            std::cout << "Cluster seed:" << clusterev << std::endl;
-            //printf("number: %i \n", clusterev->getNumber());
+            const Evidence *clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize-1);
+            //std::cout << "Cluster seed new:" << clusterev->getAdress() << std::endl;
 
+
+            //todo:reverse naar van hoog naar laag
             //for all hyps
             for(const auto hyps : hyp_stack){
-                printf("height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
+                //printf("height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
 
                 //for all evidences in the hypothesis
                 for (int k = 0; k<hyps.second->getAssignmentMatrix()->getNumMeasurements();k++) {
-                    const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, 0);
-                        std::cout << "Evidence:" << myassi.getEvidence() << " with number" <<myassi.getEvidence()->getNumber() << std::endl;
-//                    for (int l = 0; l<hyps->getAssignmentMatrix()->getNumAssignments(k);l++) {
-//                        const Assignment &myassi = hyps->getAssignmentMatrix()->getAssignment(k, l);
-//                        std::cout << "Evidence:" << myassi.getEvidence() << " with number" <<myassi.getEvidence()->getNumber() << std::endl;
-//                        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
-//                        //
-//                        if (myassi.getEvidence() == clusterev) {
-//                            printf("hoera!\n \n");
-//                        }
-//                    }
+                    //and all assignments
+                    for (int l = 0; l<hyps.second->getAssignmentMatrix()->getNumAssignments(k);l++) {
+                        const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, l);
+                        std::cout << "Evidence:" << myassi.getEvidence() << std::endl;
+                        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+
+                        //
+                        if (myassi.getEvidence() == clusterev->getAdress()) {
+                            printf("hoera!\n \n");
+                        }
+                    }
                 }
             }
 
