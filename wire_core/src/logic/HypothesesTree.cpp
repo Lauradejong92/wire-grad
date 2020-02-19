@@ -433,22 +433,26 @@ void HypothesisTree::pruneClusterwise(int setsize) {
             //std::cout << "Cluster seed new:" << clusterev->getAdress() << std::endl;
 
 
-            //todo:reverse naar van hoog naar laag
+            //todo:reverse naar van hoog naar laag; loop naar alleen children height 4
             //for all hyps
             for(const auto hyps : hyp_stack){
-                //printf("height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
+                printf("height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
 
                 //for all evidences in the hypothesis
                 for (int k = 0; k<hyps.second->getAssignmentMatrix()->getNumMeasurements();k++) {
+
                     //and all assignments
                     for (int l = 0; l<hyps.second->getAssignmentMatrix()->getNumAssignments(k);l++) {
                         const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, l);
-                        std::cout << "Evidence:" << myassi.getEvidence() << std::endl;
+                        //std::cout << "Evidence:" << myassi.getEvidence() << std::endl;
                         //std::cout << "Object:"<< myassi.getTarget() << std::endl;
 
-                        //
+                        // First
                         if (myassi.getEvidence() == clusterev->getAdress()) {
-                            printf("hoera!\n \n");
+                            if (myassi.getTarget()) {
+                                printf("hoera!\n");
+                                std::cout << "Object:" << myassi.getTarget() << " with "<<myassi.getTarget()->getID()<<std::endl;
+                            }
                         }
                     }
                 }
