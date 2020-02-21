@@ -91,9 +91,9 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //Clusterbased pruning
     //Cluster forming
 
-    pruneClusterwise(setsize);
-
     pruneTree(ev_set.getTimestamp());
+
+    pruneClusterwise(setsize);
 
     applyAssignments();
 
@@ -386,101 +386,55 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 
 void HypothesisTree::pruneClusterwise(int setsize) {
     for (const auto cluster : ClusterStorage::getInstance().getClusters()){
+        std::list<Hypothesis*> strong_hyps;
+        printf("     next cluster:\n");
         for (const auto object : ObjectStorage::getInstance().getObjects()){
             bool reject=0;
             if (object->getEvMap().size()==setsize){
+
+                //find if object matches to cluster
                 for(int time=0; time<setsize; time++){
                     //std::cout << "Evidence:" << cluster[time].getAdress() << std::endl;
                     //std::cout << "Object:"<< object->getEvMap()[time].getAdress() << std::endl;
-                    if (cluster[time].getAdress() != object->getEvMap()[time]){
+                    if (cluster[time].getAdress() != object->getEvMap()[setsize-time-1]){
                         reject=1;
                         break;
                     }
                 }
 
                 if (!reject){
-                    printf("Object == cluster \n");
-                    //mark parents
+                    //object represents cluster:
+                    //printf("Object has parents: %i \n",object->getNumParentHypotheses());
+                    for (const auto strong_hyp: object->getParents()){
+                        strong_hyps.push_back(strong_hyp);
+                        printf("           parent prob: %f, to map: %f\n",strong_hyp->getProbability(),getMAPHypothesis().getProbability());
+                    }
                 }
+            } else {
+                printf("*");
             }
         }
 
-        //now prune all unmarked parents
+//        printf("Strong hyps found for this cluster: %i \n",strong_hyps.size());
+//        //now prune all unmarked parents
+//        if (strong_hyps.size()) {
+//            for (const auto leaf_hyp: leafs_) {
+//                bool flag = 0;
+//                for (const auto strong_hyp:strong_hyps) {
+//
+//                    if (leaf_hyp->getProbability() == strong_hyp->getProbability()) {
+//                        flag = 1;
+//                        printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
+//                    }
+//                }
+//
+//                if (!flag) {
+//                    leaf_hyp->setProbability(leaf_hyp->getProbability()*0.0001);
+//                }
+//            }
+//        }
         //set mark to unmarked;
     }
-
-
-
-//    if (root_->getHeight()>=setsize && ClusterStorage::getInstance().size()>0){ //only clustering when enough datapoints & a cluster is available
-//
-//        // Find hypothesis of time t-setsize
-//        std::map<int,Hypothesis*> hyp_stack;
-//        hyp_stack[root_->getHeight()]=root_;
-//        while(!hyp_stack.empty()) {
-//
-//            //quit when right set of hypothesis from time t-setsize is found
-//            if (hyp_stack.rbegin()->first < setsize) {
-//                //printf("stacksize ends = %i \n", hyp_stack.size());
-//                break;
-//            }
-//
-//            //Save and remove hyp that is too old
-//            Hypothesis* hyp = hyp_stack.rbegin()->second;
-//            hyp_stack.erase(prev(hyp_stack.end()));
-//            //printf("height: %i \n",hyp->getHeight());
-//
-//            //Extend set with children of the hyp that is too old
-//            std::list<Hypothesis*>& children = hyp->getChildHypotheses();
-//            if (!children.empty()) {
-//                for (const auto it_child: children) {
-//                    if (it_child->getHeight()>=setsize-1) {
-//                        //printf("add height: %i \n", it_child->getHeight());
-//                        hyp_stack[it_child->getHeight()] = it_child;
-//                    }
-//                }
-//            }
-//
-//        }
-//
-// //       Search for hypotheses confirming the cluster
-//        for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++) {
-//
-//            //find seed
-//            const Evidence* clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize-1);
-//            std::cout << "Cluster seed new:" << clusterev->getAdress() << std::endl;
-//
-//            //todo:reverse naar van hoog naar laag; loop naar alleen children height 4
-//            //for all hyps
-//            for(const auto hyps : hyp_stack){
-//                printf("   hyp height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
-//
-//                //for all evidences in the hypothesis
-//                for (int k = 0; k<hyps.second->getAssignmentMatrix()->getNumMeasurements();k++) {
-//                    const Assignment &ev_ass = hyps.second->getAssignmentMatrix()->getAssignment(k, 0);
-//                    if (ev_ass.getEvidence() == clusterev->getAdress()) {
-//                        printf("      hoera! Now get objects\n");
-//
-//                        //all objects assigned to this evidence
-//                        for (int l = 0; l<hyps.second->getAssignmentMatrix()->getNumAssignments(k);l++) {
-//                            const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, l);
-//                            //std::cout << "Evidence:" << myassi.getEvidence() << std::endl;
-//                            //std::cout << "Object:"<< myassi.getTarget() << std::endl;
-//
-//                            // First, determine wich objects the seed can be referring to
-//                            if (myassi.getTarget()) {
-//                                std::cout << "       Object:" << myassi.getTarget() << " with "<<myassi.getTarget()->getID()<<std::endl;
-//                                // in candidatenset
-//                            }
-//
-//                        }
-//                    }
-//
-//                }
-//            }
-//        }
-//
-//
-//    }
 
 }
 

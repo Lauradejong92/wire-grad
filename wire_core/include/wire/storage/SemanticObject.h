@@ -58,6 +58,8 @@ public:
 
     std::vector< Evidence*> getEvMap() const;
 
+    std::set<Hypothesis*> getParents() const;
+
 protected:
 
     ObjectID ID_;

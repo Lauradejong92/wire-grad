@@ -196,4 +196,9 @@ std::vector < Evidence*> SemanticObject::getEvMap() const{
     return evidenceMap_;
 }
 
+std::set<Hypothesis*> SemanticObject::getParents() const{
+    return parent_hypotheses_;
+}
+
+
 }
