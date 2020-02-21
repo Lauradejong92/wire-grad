@@ -385,124 +385,103 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 }
 
 void HypothesisTree::pruneClusterwise(int setsize) {
-
-    if (root_->getHeight()>=setsize && ClusterStorage::getInstance().size()>0){ //only clustering when enough datapoints & a cluster is available
-
-        // Find hypothesis of time t-setsize
-        std::map<int,Hypothesis*> hyp_stack;
-        hyp_stack[root_->getHeight()]=root_;
-        while(!hyp_stack.empty()) {
-
-            //quit when right set of hypothesis from time t-setsize is found
-            if (hyp_stack.rbegin()->first < setsize) {
-                //printf("stacksize ends = %i \n", hyp_stack.size());
-                break;
-            }
-
-            //Save and remove hyp that is too old
-            Hypothesis* hyp = hyp_stack.rbegin()->second;
-            hyp_stack.erase(prev(hyp_stack.end()));
-            //printf("height: %i \n",hyp->getHeight());
-
-            //Extend set with children of the hyp that is too old
-            std::list<Hypothesis*>& children = hyp->getChildHypotheses();
-            if (!children.empty()) {
-                for (const auto it_child: children) {
-                    if (it_child->getHeight()>=setsize-1) {
-                        //printf("add height: %i \n", it_child->getHeight());
-                        hyp_stack[it_child->getHeight()] = it_child;
+    for (const auto cluster : ClusterStorage::getInstance().getClusters()){
+        for (const auto object : ObjectStorage::getInstance().getObjects()){
+            bool reject=0;
+            if (object->getEvMap().size()==setsize){
+                for(int time=0; time<setsize; time++){
+                    //std::cout << "Evidence:" << cluster[time].getAdress() << std::endl;
+                    //std::cout << "Object:"<< object->getEvMap()[time].getAdress() << std::endl;
+                    if (cluster[time].getAdress() != object->getEvMap()[time]){
+                        reject=1;
+                        break;
                     }
                 }
-            }
 
-        }
-
- //       Search for hypotheses confirming the cluster
-        for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++) {
-
-            //find seed
-            const Evidence* clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize-1);
-            std::cout << "Cluster seed new:" << clusterev->getAdress() << std::endl;
-
-            //todo:reverse naar van hoog naar laag; loop naar alleen children height 4
-            //for all hyps
-            for(const auto hyps : hyp_stack){
-                printf("   hyp height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
-
-                //for all evidences in the hypothesis
-                for (int k = 0; k<hyps.second->getAssignmentMatrix()->getNumMeasurements();k++) {
-                    const Assignment &ev_ass = hyps.second->getAssignmentMatrix()->getAssignment(k, 0);
-                    if (ev_ass.getEvidence() == clusterev->getAdress()) {
-                        printf("      hoera! Now get objects\n");
-
-                        //all objects assigned to this evidence
-                        for (int l = 0; l<hyps.second->getAssignmentMatrix()->getNumAssignments(k);l++) {
-                            const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, l);
-                            //std::cout << "Evidence:" << myassi.getEvidence() << std::endl;
-                            //std::cout << "Object:"<< myassi.getTarget() << std::endl;
-
-                            // First, determine wich objects the seed can be referring to
-                            if (myassi.getTarget()) {
-                                std::cout << "       Object:" << myassi.getTarget() << " with "<<myassi.getTarget()->getID()<<std::endl;
-                                // in candidatenset
-                            }
-
-                        }
-                    }
-
+                if (!reject){
+                    printf("Object == cluster \n");
+                    //mark parents
                 }
-                // if candidatenset, doorsturen naar spoeling
-
             }
-
-            //check if a child obays all
-
-
-
-                //std::cout << "Evidence:"<< ClusterStorage::getInstance().getEvidence(n_cluster,t) << std::endl;
-                //Hypothesis *hyp = hyp_stack.front();
         }
-                    //first:
-                    // if clusterev == hypothesis evidence
-                        //get object id
-                    //second:
-                    // if clusterev == hypothesis
-                        //if obj_id = savedobj_id
 
-
-
-
-                //voor alle evidence
-
-                        //save object adress
-
-                        //nu kids doorzoeken
-                            //for all kids
-                            // for ev = cluster(tx, nummer 1)
-                            // if verwijzing is naar objectadres
-                                // op naar de volgende
-                       // niets gevonden, dan break;
-
-           //de juiste gevonden?
-           //iets doen met alle onjuisten
-
+        //now prune all unmarked parents
+        //set mark to unmarked;
     }
 
 
-    //Todo: voorbeelde voor 1 leaf:
-//    Hypothesis* hyp = leafs_.front();
-//    //printf("lala%i", hyp->getHeight());
+
+//    if (root_->getHeight()>=setsize && ClusterStorage::getInstance().size()>0){ //only clustering when enough datapoints & a cluster is available
 //
-//    const AssignmentSet* myset= hyp->getAssignments();
-//    for (int k=0; k<myset->getNumMeasurements();k++ ) {
-//        const Assignment &myassi = myset->getMeasurementAssignment(k);
-//        //std::cout << "Evidence:"<< myassi.getEvidence() << std::endl;
-//        //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+//        // Find hypothesis of time t-setsize
+//        std::map<int,Hypothesis*> hyp_stack;
+//        hyp_stack[root_->getHeight()]=root_;
+//        while(!hyp_stack.empty()) {
+//
+//            //quit when right set of hypothesis from time t-setsize is found
+//            if (hyp_stack.rbegin()->first < setsize) {
+//                //printf("stacksize ends = %i \n", hyp_stack.size());
+//                break;
+//            }
+//
+//            //Save and remove hyp that is too old
+//            Hypothesis* hyp = hyp_stack.rbegin()->second;
+//            hyp_stack.erase(prev(hyp_stack.end()));
+//            //printf("height: %i \n",hyp->getHeight());
+//
+//            //Extend set with children of the hyp that is too old
+//            std::list<Hypothesis*>& children = hyp->getChildHypotheses();
+//            if (!children.empty()) {
+//                for (const auto it_child: children) {
+//                    if (it_child->getHeight()>=setsize-1) {
+//                        //printf("add height: %i \n", it_child->getHeight());
+//                        hyp_stack[it_child->getHeight()] = it_child;
+//                    }
+//                }
+//            }
+//
+//        }
+//
+// //       Search for hypotheses confirming the cluster
+//        for (int n_cluster=0; n_cluster<ClusterStorage::getInstance().size(); n_cluster++) {
+//
+//            //find seed
+//            const Evidence* clusterev = ClusterStorage::getInstance().getEvidence(n_cluster, setsize-1);
+//            std::cout << "Cluster seed new:" << clusterev->getAdress() << std::endl;
+//
+//            //todo:reverse naar van hoog naar laag; loop naar alleen children height 4
+//            //for all hyps
+//            for(const auto hyps : hyp_stack){
+//                printf("   hyp height: %i with prob: %f \n",hyps.second->getHeight(),hyps.second->getProbability());
+//
+//                //for all evidences in the hypothesis
+//                for (int k = 0; k<hyps.second->getAssignmentMatrix()->getNumMeasurements();k++) {
+//                    const Assignment &ev_ass = hyps.second->getAssignmentMatrix()->getAssignment(k, 0);
+//                    if (ev_ass.getEvidence() == clusterev->getAdress()) {
+//                        printf("      hoera! Now get objects\n");
+//
+//                        //all objects assigned to this evidence
+//                        for (int l = 0; l<hyps.second->getAssignmentMatrix()->getNumAssignments(k);l++) {
+//                            const Assignment &myassi = hyps.second->getAssignmentMatrix()->getAssignment(k, l);
+//                            //std::cout << "Evidence:" << myassi.getEvidence() << std::endl;
+//                            //std::cout << "Object:"<< myassi.getTarget() << std::endl;
+//
+//                            // First, determine wich objects the seed can be referring to
+//                            if (myassi.getTarget()) {
+//                                std::cout << "       Object:" << myassi.getTarget() << " with "<<myassi.getTarget()->getID()<<std::endl;
+//                                // in candidatenset
+//                            }
+//
+//                        }
+//                    }
+//
+//                }
+//            }
+//        }
+//
+//
 //    }
-//
-//    const Hypothesis* par = hyp->getParent();
-    //if evidence gelijk
-    //if target nummer is als eerder
+
 }
 
 /* ****************************************************************************** */

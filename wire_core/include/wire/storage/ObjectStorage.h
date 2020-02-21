@@ -21,6 +21,8 @@ public:
 
     void removeObject(SemanticObject& obj);
 
+    std::list<SemanticObject*> getObjects();
+
     long getUniqueID();
 
     void match(const Evidence& ev);

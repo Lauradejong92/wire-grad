@@ -52,6 +52,10 @@ const Time& ClusterStorage::getTimestamp() const {
         return timestamp_;
     }
 
+const std::vector<std:: vector<Evidence>> ClusterStorage::getClusters() const {
+    return clusterSet_;
+}
+
 
     std::vector<std:: vector<Evidence>>::const_iterator ClusterStorage::begin() const {
     return clusterSet_.begin();

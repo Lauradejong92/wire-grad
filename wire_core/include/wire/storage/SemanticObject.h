@@ -56,6 +56,8 @@ public:
 
     unsigned int getNumParentHypotheses() const;
 
+    std::vector< Evidence*> getEvMap() const;
+
 protected:
 
     ObjectID ID_;
@@ -63,6 +65,8 @@ protected:
     std::string expected_class_;
 
     std::set<Hypothesis*> parent_hypotheses_;
+
+    std::vector<Evidence*> evidenceMap_;
 
 };
 

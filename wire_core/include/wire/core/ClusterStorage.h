@@ -34,6 +34,8 @@ public:
 
     const Time& getTimestamp() const;
 
+    const std::vector<std:: vector<Evidence>> getClusters() const;
+
     /**
      *  Returns a read-only (constant) iterator that points to the
      *  first evidence item in the evidence set

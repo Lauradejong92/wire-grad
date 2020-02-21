@@ -35,6 +35,10 @@ void ObjectStorage::removeObject(SemanticObject& obj) {
     objects_.erase(obj.it_obj_storage_);
 }
 
+std::list<SemanticObject*> ObjectStorage::getObjects(){
+        return objects_;
+}
+
 long ObjectStorage::getUniqueID() {
     return ID_++;
 }

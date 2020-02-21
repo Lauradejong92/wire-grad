@@ -22,12 +22,12 @@ namespace mhf {
 
 int SemanticObject::N_SEMANTICOBJECT = 0;
 
-SemanticObject::SemanticObject(long ID) : ID_(ID), expected_class_("") {
+SemanticObject::SemanticObject(long ID) : ID_(ID), expected_class_("") , evidenceMap_(0,0){
     ++N_SEMANTICOBJECT;
 }
 
 SemanticObject::SemanticObject(const SemanticObject& orig)
-    : PropertySet(orig), ID_(orig.ID_), expected_class_(orig.expected_class_) {
+    : PropertySet(orig), ID_(orig.ID_), expected_class_(orig.expected_class_), evidenceMap_(orig.evidenceMap_) {
     ++N_SEMANTICOBJECT;
 }
 
@@ -135,6 +135,16 @@ void SemanticObject::update(const Evidence& ev) {
         }
     }
 
+    //TODO: un-hardcode this value
+    int setsize =5;
+    evidenceMap_.push_back(ev.getAdress());
+
+    if (evidenceMap_.size()>setsize){
+        evidenceMap_.erase(evidenceMap_.begin()+0);
+        //evidenceMap_.pop_back();
+        //printf("lala %i \n",evidenceMap_.size());
+    }
+
 }
 
 SemanticObject* SemanticObject::clone() const {
@@ -180,6 +190,10 @@ void SemanticObject::removeFromHypothesis(Hypothesis* hyp) {
 
 unsigned int SemanticObject::getNumParentHypotheses() const {
     return parent_hypotheses_.size();
+}
+
+std::vector < Evidence*> SemanticObject::getEvMap() const{
+    return evidenceMap_;
 }
 
 }
