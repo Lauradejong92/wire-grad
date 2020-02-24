@@ -90,14 +90,17 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     expandTree(ev_set);
 
-    //Clusterbased pruning
-    //Cluster forming
+
 
     pruneTree(ev_set.getTimestamp());
 
     applyAssignments();
 
+    //Clusterbased pruning
     pruneClusterwise(setsize);
+    pruneTree(ev_set.getTimestamp());
+
+
     // clear old hypotheses leafs
     // The hypotheses will still be there to form a tree, but do not contain any objects anymore
     root_->clearInactive();
@@ -386,36 +389,29 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 }
 
 void HypothesisTree::pruneClusterwise(int setsize) {
-    for (const auto mapobj: getMAPHypothesis().getObjects()){
-        printf("   Object in MAP: \n");
-        for (const auto ev_assigns: mapobj->getEvMap()){
-            std::cout << "       -" << ev_assigns << std::endl;
-
-        }
-        if (mapobj->getProperty("position")){
-            const Property* prop = mapobj->getProperty("position");
-//                const pbl::PDF& pdf = prop->getValue();
-//                //printf("2");
-//                //printf("check: \n");
-//                const pbl::Gaussian* gauss = pbl::PDFtoGaussian(pdf);
-//                const pbl::Vector& pos = gauss->getMean();
-//                printf("Pos is: %i\n", pos(1));
-            std::cout << "     Pos" << prop->toString() << std::endl;
-        } else {
-            printf("fail \n");
-        }
-
-        //printf("has pos %f", EvidenceStorage::getInstance().getPos(mapobj->getEvMap()[4])(1));
-    }
-
-    for (const auto cluster : ClusterStorage::getInstance().getClusters()) {
-//        printf("   cluster storage: \n");
-//        for (const auto ev_clust: cluster) {
-//            std::cout << "       -" << ev_clust.getAdress() << std::endl;
+//    for (const auto mapobj: getMAPHypothesis().getObjects()){
+//        printf("   Object in MAP: \n");
+//        for (const auto ev_assigns: mapobj->getEvMap()){
+//            std::cout << "       -" << ev_assigns << std::endl;
 //
 //        }
+//        if (mapobj->getProperty("position")){
+//            const Property* prop = mapobj->getProperty("position");
+////                const pbl::PDF& pdf = prop->getValue();
+////                //printf("2");
+////                //printf("check: \n");
+////                const pbl::Gaussian* gauss = pbl::PDFtoGaussian(pdf);
+////                const pbl::Vector& pos = gauss->getMean();
+////                printf("Pos is: %i\n", pos(1));
+//            std::cout << "     Pos" << prop->toString() << std::endl;
+//        } else {
+//            printf("fail \n");
+//        }
+//
+//        //printf("has pos %f", EvidenceStorage::getInstance().getPos(mapobj->getEvMap()[4])(1));
+//    }
 
-
+    for (const auto cluster : ClusterStorage::getInstance().getClusters()) {
 
         std::list<Hypothesis*> strong_hyps;
         printf("     next cluster:\n");
@@ -459,18 +455,12 @@ void HypothesisTree::pruneClusterwise(int setsize) {
         //now prune all unmarked parents
         if (strong_hyps.size()) {
             for (const auto leaf_hyp: leafs_) {
-                bool flag = 0;
                 for (const auto strong_hyp:strong_hyps) {
 
                     if (leaf_hyp == strong_hyp) {
-                        flag = 1;
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
                         leaf_hyp->setProbability(leaf_hyp->getProbability()*1000000);
                     }
-                }
-
-                if (!flag) {
-                    //leaf_hyp->setProbability(leaf_hyp->getProbability()*0.0001);
                 }
             }
         }
