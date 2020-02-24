@@ -85,7 +85,7 @@ namespace mhf {
                                 //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
                                 candidate=1;
                                 cluster_vector.emplace_back(next_ev);
-                                //std::cout << "          Evidence_check: " << next_ev.getAdress() << std::endl;
+                                //std::cout << "          Cluster_check: " << next_pos(1) << std::endl;
 
                             } else if (distance<=scale*sigma){
                                 //printf("cluster not free 1 \n");
