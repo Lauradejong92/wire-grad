@@ -462,9 +462,10 @@ void HypothesisTree::pruneClusterwise(int setsize) {
                 bool flag = 0;
                 for (const auto strong_hyp:strong_hyps) {
 
-                    if (leaf_hyp->getProbability() == strong_hyp->getProbability()) {
+                    if (leaf_hyp == strong_hyp) {
                         flag = 1;
-                        printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
+                        //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
+                        leaf_hyp->setProbability(leaf_hyp->getProbability()*1000000);
                     }
                 }
 
@@ -474,8 +475,11 @@ void HypothesisTree::pruneClusterwise(int setsize) {
             }
         }
         //set mark to unmarked;
+
+
     }
 
+    printf("new MAP %f",getMAPHypothesis().getProbability());
 }
 
 /* ****************************************************************************** */
