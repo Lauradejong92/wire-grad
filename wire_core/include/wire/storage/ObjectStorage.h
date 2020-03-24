@@ -31,6 +31,8 @@ public:
 
     void update(const Time& timestamp);
 
+    int getStorageSize(int cycle);
+
 protected:
 
     ObjectStorage();

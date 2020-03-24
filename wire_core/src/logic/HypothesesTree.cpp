@@ -534,7 +534,7 @@ void HypothesisTree::showStatistics() {
     }
 
     void HypothesisTree::showMAP(int cycle) {
-        //std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(cycle) << std::endl;
+        std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(cycle) << std::endl;
 
         std::cout << "   MAP Hypothesis objects         = " << std::endl;
         std::list<SemanticObject*> objects = getMAPObjects();
