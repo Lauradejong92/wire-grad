@@ -203,7 +203,6 @@ std::vector < Evidence*> SemanticObject::getEvMap() const{
 }
 
 void SemanticObject::updateEvidenceMap() {
-    printf("test \n");
     //TODO: un-hardcode this value
     int setsize =5;
     evidenceMap_.push_back(0);

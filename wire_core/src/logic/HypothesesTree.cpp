@@ -83,7 +83,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
         ObjectStorage::getInstance().match(**it_ev);
-        std::cout << "Evidence added: " << *it_ev << std::endl;
+        //std::cout << "Evidence added: " << *it_ev << std::endl;
     }
 
     t_last_update_ = ev_set.getTimestamp();
@@ -390,38 +390,14 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 }
 
 void HypothesisTree::pruneClusterwise(int setsize) {
-//    for (const auto mapobj: getMAPHypothesis().getObjects()){
-//        printf("   Object in MAP: \n");
-//        for (const auto ev_assigns: mapobj->getEvMap()){
-//            std::cout << "       -" << ev_assigns << std::endl;
-//
-//        }
-//        if (mapobj->getProperty("position")){
-//            const Property* prop = mapobj->getProperty("position");
-////                const pbl::PDF& pdf = prop->getValue();
-////                //printf("2");
-////                //printf("check: \n");
-////                const pbl::Gaussian* gauss = pbl::PDFtoGaussian(pdf);
-////                const pbl::Vector& pos = gauss->getMean();
-////                printf("Pos is: %i\n", pos(1));
-//            std::cout << "     Pos" << prop->toString() << std::endl;
-//        } else {
-//            printf("fail \n");
-//        }
-//
-//        //printf("has pos %f", EvidenceStorage::getInstance().getPos(mapobj->getEvMap()[4])(1));
-//    }
 
     for (const auto cluster : ClusterStorage::getInstance().getClusters()) {
-
-        std::list<Hypothesis*> strong_hyps;
-        printf("     next cluster:\n");
+        std::list<Hypothesis*> weak_hyps;
+        //printf("     next cluster:\n");
         //std::cout << "          Evidence:" << cluster[4].getAdress() << std::endl;
-        printf("       Storage size: %i \n",ObjectStorage::getInstance().getObjects().size());
+        //printf("       Storage size: %i \n",ObjectStorage::getInstance().getObjects().size());
         for (const auto object : ObjectStorage::getInstance().getObjects()){
-
             bool reject=0;
-
            if (object->getEvMap().size()==setsize){
                //std::cout << "               Object:" << object->getEvMap()[4] << std::endl;
                 //find if object matches to cluster (old to new)
@@ -431,7 +407,7 @@ void HypothesisTree::pruneClusterwise(int setsize) {
 
                     if (cluster[time].getAdress() != object->getEvMap()[time]){
                         //std::cout << "    No match:" << cluster[time].getAdress() << std::endl;
-                        reject=1;
+                        reject=time;
                         break;
                     } else {
                         //printf("^");
@@ -439,31 +415,32 @@ void HypothesisTree::pruneClusterwise(int setsize) {
                 }
                //printf("\n");
 
-                if (!reject){
-                    //object represents cluster:
-                    //printf("       Object has parents: %i \n",object->getNumParentHypotheses());
-                    for (const auto strong_hyp: object->getParents()){
-                        strong_hyps.push_back(strong_hyp);
+                if (reject>0){
+                    ///printf("*");
+                    //object conflicts with cluster:
+                    for (const auto weak_hyp: object->getParents()){
+                        weak_hyps.push_back(weak_hyp);
                         //printf("           parent prob: %f, to map: %f\n",strong_hyp->getProbability(), getMAPHypothesis().getProbability());
                     }
                 }
-            } else {
-                //printf("*");
             }
         }
 
         //printf("Strong hyps found for this cluster: %i \n",strong_hyps.size());
         //now prune all unmarked parents
-        if (strong_hyps.size()) {
+        if (weak_hyps.size()) {
+            int count =0;
             for (const auto leaf_hyp: leafs_) {
-                for (const auto strong_hyp:strong_hyps) {
-
-                    if (leaf_hyp == strong_hyp) {
+                for (const auto weak_hyp: weak_hyps) {
+                    if (leaf_hyp == weak_hyp) {
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
-                        leaf_hyp->setProbability(leaf_hyp->getProbability()*1000000);
+                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.0000001);
+                        //leaf_hyp->setProbability(0);
+                        count++;
                     }
                 }
             }
+            printf("Weak hyps found: %i \n",count);
         }
         //set mark to unmarked;
 
