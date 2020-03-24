@@ -28,6 +28,9 @@
 #include <cassert>
 #include <float.h>
 
+#include <iostream>
+#include <fstream>
+
 #include "problib/conversions.h"
 
 #ifdef MHF_MEASURE_TIME
@@ -53,6 +56,28 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
     leafs_.push_back(empty_hyp);
     root_ = empty_hyp;
     MAP_hypothesis_ = empty_hyp;
+
+    //empty data files
+        //objects
+        std::ofstream myfile_obj;
+        myfile_obj.open("/home/laura/Documents/Data_collection/objects_mat.m");
+        myfile_obj << " ";
+        myfile_obj.close();
+        //evidence
+        std::ofstream myfile_ev;
+        myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m");
+        myfile_ev << " ";
+        myfile_ev.close();
+        //map
+        std::ofstream myfile_map;
+        myfile_map.open("/home/laura/Documents/Data_collection/map_mat.m");
+        myfile_map << " ";
+        myfile_map.close();
+        //hypothesis
+        std::ofstream myfile_hyp;
+        myfile_hyp.open("/home/laura/Documents/Data_collection/hyp_mat.m");
+        myfile_hyp << " ";
+        myfile_hyp.close();
 }
 
 HypothesisTree::~HypothesisTree() {
@@ -67,10 +92,14 @@ HypothesisTree::~HypothesisTree() {
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
     static int setsize =5;
+    static int nRep = 0;
+    nRep++;
 
     if (ev_set.size() == 0) {
         return;
     }
+
+    showEvidence(ev_set,nRep);//print
 
 #ifdef MHF_MEASURE_TIME
     timespec t_start_total, t_end_total;
@@ -114,6 +143,9 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
     showStatistics();
+    showMAP(nRep);
+    showHypP(nRep);
+
     ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
 #ifdef MHF_MEASURE_TIME
@@ -483,5 +515,52 @@ void HypothesisTree::showStatistics() {
     //std::cout << "   Tree height                 = " << tree_height_ << std::endl;
     std::cout << "----" << std::endl;
 }
+
+    void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
+        //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
+        printf("   Evidence size                  = %i \n", ev_set.size());
+        std::ofstream myfile_ev;
+        myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m", std::ios::app);
+        myfile_ev << "evidence{"<< cycle<<"}=[";
+        for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
+            //Plot evidence:
+            Evidence* myEvid = *it_ev;
+            const Property* my_prop_e = myEvid->getProperty("position");
+            myfile_ev << my_prop_e->toString()<<"\n";
+            //std::cout << "Evidence: "<< my_prop_e->toString() << std::endl;
+        }
+        myfile_ev << "];"<<"\n";
+        myfile_ev.close();
+    }
+
+    void HypothesisTree::showMAP(int cycle) {
+        //std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(cycle) << std::endl;
+
+        std::cout << "   MAP Hypothesis objects         = " << std::endl;
+        std::list<SemanticObject*> objects = getMAPObjects();
+        std::ofstream myfile_map;
+        myfile_map.open("/home/laura/Documents/Data_collection/map_mat.m", std::ios::app);
+        myfile_map << "MAP{"<< cycle<<"}=[";
+        for(std::list<SemanticObject*>::iterator it_obj = objects.begin(); it_obj != objects.end(); ++it_obj) {
+            SemanticObject& obj = **it_obj;
+            const Property* my_prop = obj.getProperty("position");
+            myfile_map << obj.getID()<<", "<<my_prop->toString()<<"\n";
+        }
+        myfile_map << "];"<<"\n";
+        myfile_map.close();
+    }
+
+    void HypothesisTree::showHypP(int cycle){
+        std::ofstream myfile_hyp;
+        myfile_hyp.open("/home/laura/Documents/Data_collection/hyp_mat.m", std::ios::app);
+        myfile_hyp << "hyp{"<< cycle<<"}=[";
+        std::list<Hypothesis *> allHyps = getHypotheses();
+        for (std::list<Hypothesis *>::iterator it_hyp = allHyps.begin(); it_hyp != allHyps.end(); ++it_hyp) {
+            Hypothesis &myHyp = **it_hyp;
+            myfile_hyp << myHyp.getProbability() << ",";
+        }
+        myfile_hyp<<"];"<<"\n";
+        myfile_hyp.close();
+    }
 
 }
