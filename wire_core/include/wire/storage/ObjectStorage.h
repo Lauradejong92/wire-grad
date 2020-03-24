@@ -2,6 +2,8 @@
 #define MHT_OBJECT_STORAGE_H_
 
 #include <list>
+#include <wire/core/datatypes.h>
+#include "wire/core/PropertySet.h"
 
 namespace mhf {
 
@@ -26,6 +28,8 @@ public:
     long getUniqueID();
 
     void match(const Evidence& ev);
+
+    void update(const Time& timestamp);
 
 protected:
 

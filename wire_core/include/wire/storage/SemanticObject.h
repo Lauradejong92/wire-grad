@@ -10,6 +10,7 @@
 
 #include "wire/core/PropertySet.h"
 #include <list>
+#include "wire/core/datatypes.h"
 
 namespace mhf {
 
@@ -38,9 +39,9 @@ public:
 
     SemanticObject* clone() const;
 
-    double getLastUpdateTime() const;
+    Time getLastUpdateTime() const;
 
-    double getTimestamp() const;
+    //double getTimestamp() const;
 
     const ClassModel& getExpectedObjectModel() const;
 
@@ -60,6 +61,8 @@ public:
 
     std::set<Hypothesis*> getParents() const;
 
+    void updateEvidenceMap();
+
 protected:
 
     ObjectID ID_;
@@ -69,6 +72,8 @@ protected:
     std::set<Hypothesis*> parent_hypotheses_;
 
     std::vector<Evidence*> evidenceMap_;
+
+    Time last_update_;
 
 };
 

@@ -13,6 +13,7 @@
 #include "wire/core/Property.h"
 #include "wire/logic/Assignment.h"
 #include "wire/logic/Hypothesis.h"
+#include "wire/core/datatypes.h"
 
 #include <problib/conversions.h>
 
@@ -22,7 +23,7 @@ namespace mhf {
 
 int SemanticObject::N_SEMANTICOBJECT = 0;
 
-SemanticObject::SemanticObject(long ID) : ID_(ID), expected_class_("") , evidenceMap_(0,0){
+SemanticObject::SemanticObject(long ID) : ID_(ID), expected_class_("") , evidenceMap_(0){
     ++N_SEMANTICOBJECT;
 }
 
@@ -137,6 +138,7 @@ void SemanticObject::update(const Evidence& ev) {
 
     //TODO: un-hardcode this value
     int setsize =5;
+    last_update_=ev.getTimestamp();
     evidenceMap_.push_back(ev.getAdress());
 
     if (evidenceMap_.size()>setsize){
@@ -149,6 +151,10 @@ void SemanticObject::update(const Evidence& ev) {
 
 SemanticObject* SemanticObject::clone() const {
     return new SemanticObject(*this);
+}
+
+    Time SemanticObject::getLastUpdateTime() const{
+    return last_update_;
 }
 
 const ClassModel& SemanticObject::getExpectedObjectModel() const {
@@ -194,6 +200,19 @@ unsigned int SemanticObject::getNumParentHypotheses() const {
 
 std::vector < Evidence*> SemanticObject::getEvMap() const{
     return evidenceMap_;
+}
+
+void SemanticObject::updateEvidenceMap() {
+    printf("test \n");
+    //TODO: un-hardcode this value
+    int setsize =5;
+    evidenceMap_.push_back(0);
+
+    if (evidenceMap_.size()>setsize){
+        evidenceMap_.erase(evidenceMap_.begin()+0);
+        //evidenceMap_.pop_back();
+        //printf("lala %i \n",evidenceMap_.size());
+    }
 }
 
 std::set<Hypothesis*> SemanticObject::getParents() const{

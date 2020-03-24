@@ -114,6 +114,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
     showStatistics();
+    ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
