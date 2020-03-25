@@ -513,11 +513,19 @@ void HypothesisTree::showStatistics() {
     std::cout << "   Number of hypotheses        = " << leafs_.size() << std::endl;
     //std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
     //std::cout << "   Tree height                 = " << tree_height_ << std::endl;
-    std::cout << "----" << std::endl;
+    //std::cout << "----" << std::endl;
+    for (const auto hyp: leafs_){
+        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
+        for(const auto obj: hyp->getObjects()){
+            //SemanticObject& obj = **it_obj;
+            const Property* my_prop = obj->getProperty("position");
+            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
+        }
+    }
 }
 
     void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
-        //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
+        std::cout << "---------------------------------------------------------------------------" <<  std::endl;
         printf("   Evidence size                  = %i \n", ev_set.size());
         std::ofstream myfile_ev;
         myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m", std::ios::app);
