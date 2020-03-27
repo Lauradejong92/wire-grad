@@ -47,10 +47,9 @@ add_library(wire
     src/core/Property.cpp
     src/core/Evidence.cpp
     src/core/EvidenceSet.cpp
-        src/core/EvidenceStorage.cpp
-        src/core/ClusterStorage.cpp
-
     src/core/PropertySet.cpp
+        src/storage/EvidenceStorage.cpp
+        src/storage/TrailStorage.cpp
     src/storage/SemanticObject.cpp
     src/storage/ObjectStorage.cpp
     src/storage/KnowledgeDatabase.cpp
@@ -67,11 +66,11 @@ add_library(wire
     include/wire/core/Property.h
     include/wire/core/Evidence.h
     include/wire/core/EvidenceSet.h
-        include/wire/core/EvidenceStorage.h
-        include/wire/core/ClusterStorage.h
     include/wire/core/PropertySet.h
     include/wire/storage/SemanticObject.h
     include/wire/storage/ObjectStorage.h
+        include/wire/storage/EvidenceStorage.h
+        include/wire/storage/TrailStorage.h
     include/wire/storage/KnowledgeDatabase.h
     include/wire/util/ObjectModelParser.h
     include/wire/logic/Assignment.h

@@ -16,13 +16,13 @@
 #include "wire/storage/KnowledgeDatabase.h"
 #include "wire/storage/ObjectStorage.h"
 #include "wire/storage/SemanticObject.h"
+#include "wire/storage/EvidenceStorage.h"
+#include "wire/storage/TrailStorage.h"
 
 #include "wire/core/Evidence.h"
 #include "wire/core/EvidenceSet.h"
 #include "wire/core/Property.h"
 #include "wire/core/ClassModel.h"
-#include "wire/core/EvidenceStorage.h"
-#include "wire/core/ClusterStorage.h"
 
 #include <queue>
 #include <cassert>
@@ -126,7 +126,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     applyAssignments();
 
     //Clusterbased pruning
-    pruneClusterwise(setsize);
+    pruneTrailConflicts(setsize);
     pruneTree(ev_set.getTimestamp());
 
 
@@ -421,9 +421,9 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
     DEBUG_INFO("pruneTree - end\n");
 }
 
-void HypothesisTree::pruneClusterwise(int setsize) {
+void HypothesisTree::pruneTrailConflicts(int setsize) {
 
-    for (const auto cluster : ClusterStorage::getInstance().getClusters()) {
+    for (const auto cluster : TrailStorage::getInstance().getTrail()) {
         std::list<Hypothesis*> weak_hyps;
         //printf("     next cluster:\n");
         //std::cout << "          Evidence:" << cluster[4].getAdress() << std::endl;

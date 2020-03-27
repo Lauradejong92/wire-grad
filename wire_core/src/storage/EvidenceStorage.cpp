@@ -8,8 +8,8 @@
 
 #include "wire/core/EvidenceSet.h"
 #include "wire/core/Evidence.h"
-#include "wire/core/EvidenceStorage.h"
-#include "wire/core/ClusterStorage.h"
+#include "wire/storage/EvidenceStorage.h"
+#include "wire/storage/TrailStorage.h"
 #include "wire/core/Property.h"
 #include "problib/conversions.h"
 
@@ -57,7 +57,7 @@ namespace mhf {
 
         if (evidenceMap.size()>=setsize){
             // remove old clusters
-            ClusterStorage::getInstance().clear();
+            TrailStorage::getInstance().clear();
             //printf("Start clustering: \n");
 
             //For oldest set (= at time-setsize)
@@ -112,7 +112,7 @@ namespace mhf {
 
                 if (cluster_vector.size()){
                     //printf("cluster found! \n");
-                    ClusterStorage::getInstance().add(cluster_vector);
+                    TrailStorage::getInstance().add(cluster_vector);
                 }
             }
         }

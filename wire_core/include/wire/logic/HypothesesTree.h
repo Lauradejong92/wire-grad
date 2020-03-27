@@ -142,7 +142,7 @@ protected:
     void pruneTree(const Time& timestamp);
 
     // Prune tree based on clusters
-    void pruneClusterwise(int setsize);
+    void pruneTrailConflicts(int setsize);
 
 };
 

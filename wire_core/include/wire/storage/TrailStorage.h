@@ -16,15 +16,15 @@ class Evidence;
  *      Author: ls de Jong
  *      origin: sdries
  */
-class ClusterStorage {
+class TrailStorage {
 
 public:
 
-    static ClusterStorage& getInstance();
+    static TrailStorage& getInstance();
 
-    virtual ~ClusterStorage();
+    virtual ~TrailStorage();
 
-    const Evidence* getEvidence (int set, int place) const;
+    //const Evidence* getEvidence (int set, int place) const;
 
     void add(std::vector<Evidence> ev_set);
 
@@ -34,7 +34,7 @@ public:
 
     const Time& getTimestamp() const;
 
-    const std::vector<std:: vector<Evidence>> getClusters() const;
+    const std::vector<std:: vector<Evidence>> getTrail() const;
 
     /**
      *  Returns a read-only (constant) iterator that points to the
@@ -51,13 +51,13 @@ public:
     typedef std::vector<std:: vector<Evidence>>::const_iterator const_iterator;
 
 protected:
-    ClusterStorage();
-    static ClusterStorage* instance_;
+    TrailStorage();
+    static TrailStorage* instance_;
     /// The time from which all evidence in the set originates
     Time timestamp_;
 
     /// Collection of evidence items
-    std::vector<std:: vector<Evidence>> clusterSet_;
+    std::vector<std:: vector<Evidence>> trailSet_;
 
 };
 
