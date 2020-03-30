@@ -99,12 +99,12 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
         return;
     }
 
-    showEvidence(ev_set,nRep);//print
-
 #ifdef MHF_MEASURE_TIME
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
+    //showEvidence(ev_set,nRep);//print
+
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
     EvidenceStorage::getInstance().cluster(setsize);
@@ -119,15 +119,13 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     expandTree(ev_set);
 
-
-
     pruneTree(ev_set.getTimestamp());
 
     applyAssignments();
 
     //Clusterbased pruning
     pruneTrailConflicts(setsize);
-    pruneTree(ev_set.getTimestamp());
+    pruneTree2(ev_set.getTimestamp());
 
 
     // clear old hypotheses leafs
@@ -143,8 +141,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
     showStatistics();
-    showMAP(nRep);
-    showHypP(nRep);
+    //showMAP(nRep);
+    //showHypP(nRep);
 
     ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
@@ -466,7 +464,7 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
                 for (const auto weak_hyp: weak_hyps) {
                     if (leaf_hyp == weak_hyp) {
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
-                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.0000001);
+                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.00001);
                         //leaf_hyp->setProbability(0);
                         count++;
                     }
@@ -481,6 +479,33 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
 
     printf("new MAP %f",getMAPHypothesis().getProbability());
 }
+
+    void HypothesisTree::pruneTree2(const Time& timestamp) {
+        double prob_ratio = 1e-8;
+
+        // determine best hypothesis
+        Hypothesis* best_hyp = leafs_.front();
+        for (const auto leaf: leafs_){
+            if (best_hyp->getProbability()<leaf->getProbability()){
+                best_hyp=leaf;
+            }
+        }
+        MAP_hypothesis_=best_hyp;
+        printf("MAP prob: %f", best_hyp->getProbability());
+
+        // now remove too large drops
+        double min_prob = MAP_hypothesis_->getProbability()*prob_ratio;
+
+        for (const auto leaf: leafs_){
+            if (leaf->getProbability()< min_prob){
+                leaf->setInactive();
+            }
+        }
+
+// clear leaf list and add new leafs of tree
+leafs_.clear();
+root_->findActiveLeafs(leafs_);
+    }
 
 /* ****************************************************************************** */
 /* *                                GETTERS                                     * */
