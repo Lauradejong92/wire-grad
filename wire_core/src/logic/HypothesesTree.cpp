@@ -78,6 +78,11 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
         myfile_hyp.open("/home/laura/Documents/Data_collection/hyp_mat.m");
         myfile_hyp << " ";
         myfile_hyp.close();
+        //trail
+        std::ofstream myfile_tra;
+        myfile_tra.open("/home/laura/Documents/Data_collection/trail_mat.m");
+        myfile_tra << " ";
+        myfile_tra.close();
 }
 
 HypothesisTree::~HypothesisTree() {
@@ -124,7 +129,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     applyAssignments();
     ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
-    printf("Hyps before pruning: %i \n",leafs_.size());
+    printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
     pruneTrailConflicts(setsize);
     pruneTree2(ev_set.getTimestamp());
@@ -142,10 +147,12 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     ++n_updates_;
 
-    showStatistics();
+
     showMAP(nRep);
     showHypP(nRep);
+    showTrail(nRep);
 
+    showStatistics();
 
 
 #ifdef MHF_MEASURE_TIME
@@ -466,7 +473,7 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
                 for (const auto weak_hyp: weak_hyps) {
                     if (leaf_hyp == weak_hyp) {
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
-                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.0001);
+                        leaf_hyp->setProbability(leaf_hyp->getProbability()*1e-8);
                         //leaf_hyp->setProbability(0);
                         count++;
                     }
@@ -539,24 +546,24 @@ const std::list<SemanticObject*>& HypothesisTree::getMAPObjects() const {
 
 void HypothesisTree::showStatistics() {
     std::cout << "   Number of hypotheses        = " << leafs_.size() << std::endl;
-    //std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
-    //std::cout << "   Tree height                 = " << tree_height_ << std::endl;
-    //std::cout << "----" << std::endl;
-//    for (const auto hyp: leafs_){
-//        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
-//        for(const auto obj: hyp->getObjects()){
-//            //SemanticObject& obj = **it_obj;
-//            const Property* my_prop = obj->getProperty("position");
-//            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
-//            //std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
-//        }
-//    }
+//    std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
+//    std::cout << "   Tree height                 = " << tree_height_ << std::endl;
+//    std::cout << "----" << std::endl;
+    for (const auto hyp: leafs_){
+        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
+        for(const auto obj: hyp->getObjects()){
+            //SemanticObject& obj = **it_obj;
+            const Property* my_prop = obj->getProperty("position");
+            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
+            std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
+        }
+    }
         std::cout << "---------------------------------------------------------------------------" <<  std::endl;
 }
 
     void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
         //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
-        printf("   Evidence size                  = %i \n", ev_set.size());
+        //printf("   Evidence size                  = %i \n", ev_set.size());
         std::ofstream myfile_ev;
         myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m", std::ios::app);
         myfile_ev << "evidence{"<< cycle<<"}=[";
@@ -599,6 +606,15 @@ void HypothesisTree::showStatistics() {
         }
         myfile_hyp<<"];"<<"\n";
         myfile_hyp.close();
+    }
+
+    void HypothesisTree::showTrail(int cycle){
+        std::ofstream myfile_tra;
+        myfile_tra.open("/home/laura/Documents/Data_collection/trail_mat.m", std::ios::app);
+        myfile_tra << "trail{"<< cycle<<"}=[";
+        myfile_tra << TrailStorage::getInstance().getTrail().size();
+        myfile_tra<<"];"<<"\n";
+        myfile_tra.close();
     }
 
 }

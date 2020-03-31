@@ -109,6 +109,7 @@ public:
     void showEvidence(const EvidenceSet& ev_set, int cycle);
     void showMAP(int cycle);
     void showHypP(int cycle);
+    void showTrail(int cycle);
 
 protected:
 
