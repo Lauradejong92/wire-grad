@@ -103,7 +103,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
-    //showEvidence(ev_set,nRep);//print
+    showEvidence(ev_set,nRep);//print
 
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
@@ -119,10 +119,12 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     expandTree(ev_set);
 
-    pruneTree(ev_set.getTimestamp());
+    //pruneTree(ev_set.getTimestamp());
 
     applyAssignments();
+    ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
+    printf("Hyps before pruning: %i \n",leafs_.size());
     //Clusterbased pruning
     pruneTrailConflicts(setsize);
     pruneTree2(ev_set.getTimestamp());
@@ -141,10 +143,10 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
     showStatistics();
-    //showMAP(nRep);
-    //showHypP(nRep);
+    showMAP(nRep);
+    showHypP(nRep);
 
-    ObjectStorage::getInstance().update(ev_set.getTimestamp());
+
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
@@ -464,20 +466,20 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
                 for (const auto weak_hyp: weak_hyps) {
                     if (leaf_hyp == weak_hyp) {
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
-                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.00001);
+                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.000001);
                         //leaf_hyp->setProbability(0);
                         count++;
                     }
                 }
             }
-            printf("Weak hyps found: %i \n",count);
+            //printf("Weak hyps found: %i \n",count);
         }
         //set mark to unmarked;
 
 
     }
 
-    printf("new MAP %f",getMAPHypothesis().getProbability());
+   // printf("new MAP %f",getMAPHypothesis().getProbability());
 }
 
     void HypothesisTree::pruneTree2(const Time& timestamp) {
@@ -491,7 +493,7 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
             }
         }
         MAP_hypothesis_=best_hyp;
-        printf("MAP prob: %f", best_hyp->getProbability());
+        printf("MAP prob: %f \n", best_hyp->getProbability());
 
         // now remove too large drops
         double min_prob = MAP_hypothesis_->getProbability()*prob_ratio;
@@ -502,9 +504,10 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
             }
         }
 
-// clear leaf list and add new leafs of tree
-leafs_.clear();
-root_->findActiveLeafs(leafs_);
+    // clear leaf list and add new leafs of tree
+    leafs_.clear();
+    root_->findActiveLeafs(leafs_);
+    normalizeProbabilities();
     }
 
 /* ****************************************************************************** */
@@ -539,14 +542,16 @@ void HypothesisTree::showStatistics() {
     //std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
     //std::cout << "   Tree height                 = " << tree_height_ << std::endl;
     //std::cout << "----" << std::endl;
-    for (const auto hyp: leafs_){
-        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
-        for(const auto obj: hyp->getObjects()){
-            //SemanticObject& obj = **it_obj;
-            const Property* my_prop = obj->getProperty("position");
-            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
-        }
-    }
+//    for (const auto hyp: leafs_){
+//        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
+//        for(const auto obj: hyp->getObjects()){
+//            //SemanticObject& obj = **it_obj;
+//            const Property* my_prop = obj->getProperty("position");
+//            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
+//            //std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
+//        }
+//    }
+        std::cout << "---------------------------------------------------------------------------" <<  std::endl;
 }
 
     void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
