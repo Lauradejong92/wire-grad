@@ -119,7 +119,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     expandTree(ev_set);
 
-    //pruneTree(ev_set.getTimestamp());
+    pruneTree(ev_set.getTimestamp());
 
     applyAssignments();
     ObjectStorage::getInstance().update(ev_set.getTimestamp());
@@ -466,7 +466,7 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
                 for (const auto weak_hyp: weak_hyps) {
                     if (leaf_hyp == weak_hyp) {
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
-                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.000001);
+                        leaf_hyp->setProbability(leaf_hyp->getProbability()*0.0001);
                         //leaf_hyp->setProbability(0);
                         count++;
                     }
@@ -555,7 +555,7 @@ void HypothesisTree::showStatistics() {
 }
 
     void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
-        std::cout << "---------------------------------------------------------------------------" <<  std::endl;
+        //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
         printf("   Evidence size                  = %i \n", ev_set.size());
         std::ofstream myfile_ev;
         myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m", std::ios::app);
@@ -574,7 +574,7 @@ void HypothesisTree::showStatistics() {
     void HypothesisTree::showMAP(int cycle) {
         std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(cycle) << std::endl;
 
-        std::cout << "   MAP Hypothesis objects         = " << std::endl;
+        //std::cout << "   MAP Hypothesis objects         = " << std::endl;
         std::list<SemanticObject*> objects = getMAPObjects();
         std::ofstream myfile_map;
         myfile_map.open("/home/laura/Documents/Data_collection/map_mat.m", std::ios::app);
