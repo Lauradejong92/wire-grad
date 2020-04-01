@@ -96,7 +96,7 @@ HypothesisTree::~HypothesisTree() {
 
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
-    static int setsize =5;
+    //static int setsize =5;
     static int nRep = 0;
     nRep++;
 
@@ -111,8 +111,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     showEvidence(ev_set,nRep);//print
 
     //Add evidence to storage ???
-    EvidenceStorage::getInstance().add(ev_set,setsize);
-    EvidenceStorage::getInstance().cluster(setsize);
+    //EvidenceStorage::getInstance().add(ev_set,setsize);
+    //EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
@@ -127,12 +127,12 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     pruneTree(ev_set.getTimestamp());
 
     applyAssignments();
-    ObjectStorage::getInstance().update(ev_set.getTimestamp());
+    //ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
     printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
-    pruneTrailConflicts(setsize);
-    pruneTree2(ev_set.getTimestamp());
+    //pruneTrailConflicts(setsize);
+    //pruneTree2(ev_set.getTimestamp());
 
 
     // clear old hypotheses leafs
@@ -150,7 +150,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     showMAP(nRep);
     showHypP(nRep);
-    showTrail(nRep);
+    //showTrail(nRep);
 
     showStatistics();
 
@@ -549,15 +549,15 @@ void HypothesisTree::showStatistics() {
 //    std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
 //    std::cout << "   Tree height                 = " << tree_height_ << std::endl;
 //    std::cout << "----" << std::endl;
-    for (const auto hyp: leafs_){
-        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
-        for(const auto obj: hyp->getObjects()){
-            //SemanticObject& obj = **it_obj;
-            const Property* my_prop = obj->getProperty("position");
-            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
-            std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
-        }
-    }
+//    for (const auto hyp: leafs_){
+//        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
+//        for(const auto obj: hyp->getObjects()){
+//            //SemanticObject& obj = **it_obj;
+//            const Property* my_prop = obj->getProperty("position");
+//            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
+//            std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
+//        }
+//    }
         std::cout << "---------------------------------------------------------------------------" <<  std::endl;
 }
 

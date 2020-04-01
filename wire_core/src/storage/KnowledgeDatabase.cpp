@@ -192,7 +192,7 @@ double KnowledgeDatabase::getProbabilityExisting(const Evidence& z, const Semant
 
         float dist = sqrt((pos_z(0)-pos_obj(0))*(pos_z(0)-pos_obj(0))+(pos_z(1)-pos_obj(1))*(pos_z(1)-pos_obj(1)));
         if (dist > gate){
-            printf(".");
+            //printf(".");
             return 0;
         }
 
