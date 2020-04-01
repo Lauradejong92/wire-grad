@@ -29,6 +29,7 @@
 #include <chrono>
 
 #include <fstream>
+#include <ros/time.h>
 
 #ifdef MHF_MEASURE_TIME
 
@@ -393,6 +394,8 @@ void HypothesisTree::showStatistics() {
     nRep++;
     std::cout << "---------------------------------------------------------------------------" << std::endl;
     std::cout << "Report of Cycle                   = " << nRep << std::endl;
+    static double tstart = ros::Time::now().toSec();
+    printf("-- %f --\n", ros::Time::now().toSec()-tstart);
 }
 
 }
