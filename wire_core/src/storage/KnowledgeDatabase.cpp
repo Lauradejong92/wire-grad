@@ -172,6 +172,7 @@ double KnowledgeDatabase::getProbabilityClutter(const Evidence& z) {
 }
 
 double KnowledgeDatabase::getProbabilityExisting(const Evidence& z, const SemanticObject& obj) {
+    float gate = 0.15;
     // calculate prior (prior probability that target generates a detection)
     double prior = getPriorExisting();
 
@@ -179,6 +180,23 @@ double KnowledgeDatabase::getProbabilityExisting(const Evidence& z, const Semant
     double likelihood = obj.getLikelihood(z);
 
     //cout << "p_existing = " << prior << " * " << likelihood << " = " << prior * likelihood << endl;
+    if (obj.getProperty("position") && z.getProperty("position")){
+        const Property* prop_z = z.getProperty("position");
+        const pbl::PDF& pdf_z = prop_z->getValue();
+        const pbl::Gaussian* gauss_z = pbl::PDFtoGaussian(pdf_z);
+        const pbl::Vector& pos_z = gauss_z->getMean();
+        const Property* prop_obj = obj.getProperty("position");
+        const pbl::PDF& pdf_obj = prop_obj->getValue();
+        const pbl::Gaussian* gauss_obj = pbl::PDFtoGaussian(pdf_obj);
+        const pbl::Vector& pos_obj = gauss_obj->getMean();
+
+        float dist = sqrt((pos_z(0)-pos_obj(0))*(pos_z(0)-pos_obj(0))+(pos_z(1)-pos_obj(1))*(pos_z(1)-pos_obj(1)));
+        if (dist > gate){
+            printf(".");
+            return 0;
+        }
+
+    }
 
     return prior * likelihood;
 }
