@@ -172,7 +172,24 @@ double KnowledgeDatabase::getProbabilityClutter(const Evidence& z) {
 }
 
 double KnowledgeDatabase::getProbabilityExisting(const Evidence& z, const SemanticObject& obj) {
-    float gate = 0.15;
+    float v_max=1; //m/s
+    //float standard_gate= 0.5;//m
+    float min_gate = 0.01;
+
+    Time delta_t = z.getTimestamp()-obj.getLastUpdateTime();
+    //printf("time: %f \n",delta_t);
+
+    float gate = v_max*delta_t;
+
+    if (gate<min_gate){
+        gate = min_gate;
+    }
+
+//    if ((!gate) | (gate>standard_gate)){
+//        gate=standard_gate;
+//    }
+    //printf("gate: %f \n",gate);
+
     // calculate prior (prior probability that target generates a detection)
     double prior = getPriorExisting();
 

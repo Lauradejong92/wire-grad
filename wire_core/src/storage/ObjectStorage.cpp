@@ -46,17 +46,23 @@ namespace mhf {
     }
 
     void ObjectStorage::match(const Evidence &ev) {
+        if (objects_.size()){
+            SemanticObject &obj = **(objects_.begin());
+        }
+        //SemanticObject &obj = **(objects_.begin());
+        //T
 
         //cout << endl << "ObjectStorage::match" << endl;
 
         for (list<SemanticObject *>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
+            //printf("%i timedif = %f ",(**it_obj).getID(), ev.getTimestamp()-(**it_obj).getTimestamp());
+            //printf("tijd:  %f\n", (**it_obj).getTimestamp());
             SemanticObject &obj = **it_obj;
             obj.propagate(ev.getTimestamp());
         }
 
         for (list<SemanticObject *>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
             SemanticObject &obj = **it_obj;
-
             double prob_existing = KnowledgeDatabase::getInstance().getProbabilityExisting(ev, obj);
             if (prob_existing > 0) {
 

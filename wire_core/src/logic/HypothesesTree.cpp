@@ -129,8 +129,9 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     applyAssignments();
     //ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
-    printf("Hyps before pruning:                     %i \n",leafs_.size());
+
     //Clusterbased pruning
+    //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //pruneTrailConflicts(setsize);
     //pruneTree2(ev_set.getTimestamp());
 
