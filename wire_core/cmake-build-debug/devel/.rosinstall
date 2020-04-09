@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/amigo/catkin_ws/src/wire-grad/wire_core/cmake-build-debug/devel/setup.sh

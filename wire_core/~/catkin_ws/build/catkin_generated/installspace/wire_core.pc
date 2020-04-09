@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: wire_core
+Description: Description of wire_core
+Version: 0.0.1
+Cflags: -I${prefix}/include -I/usr/include
+Libs: -L${prefix}/lib /usr/lib/x86_64-linux-gnu/libtinyxml.so
+Requires: roscpp tf wire_msgs pluginlib problib std_srvs

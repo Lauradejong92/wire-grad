@@ -81,7 +81,7 @@ namespace mhf {
         vector<int> count_count;
 
         std::ofstream myfile_obj;
-        myfile_obj.open("/home/laura/Documents/Data_collection/objects_mat.m", std::ios::app);
+        myfile_obj.open("/home/amigo/Documents/Data_collection/objects_mat.m", std::ios::app);
         myfile_obj << "objects{"<< cycle<<"}=["<<"\n";
 
         for (int i = 1; i <= ID_; i++)

@@ -60,27 +60,27 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
     //empty data files
         //objects
         std::ofstream myfile_obj;
-        myfile_obj.open("/home/laura/Documents/Data_collection/objects_mat.m");
+        myfile_obj.open("/home/amigo/Documents/Data_collection/objects_mat.m");
         myfile_obj << " ";
         myfile_obj.close();
         //evidence
         std::ofstream myfile_ev;
-        myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m");
+        myfile_ev.open("/home/amigo/Documents/Data_collection/evidence_mat.m");
         myfile_ev << " ";
         myfile_ev.close();
         //map
         std::ofstream myfile_map;
-        myfile_map.open("/home/laura/Documents/Data_collection/map_mat.m");
+        myfile_map.open("/home/amigo/Documents/Data_collection/map_mat.m");
         myfile_map << " ";
         myfile_map.close();
         //hypothesis
         std::ofstream myfile_hyp;
-        myfile_hyp.open("/home/laura/Documents/Data_collection/hyp_mat.m");
+        myfile_hyp.open("/home/amigo/Documents/Data_collection/hyp_mat.m");
         myfile_hyp << " ";
         myfile_hyp.close();
         //trail
         std::ofstream myfile_tra;
-        myfile_tra.open("/home/laura/Documents/Data_collection/trail_mat.m");
+        myfile_tra.open("/home/amigo/Documents/Data_collection/trail_mat.m");
         myfile_tra << " ";
         myfile_tra.close();
 }
@@ -565,7 +565,7 @@ void HypothesisTree::showStatistics() {
         //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
         //printf("   Evidence size                  = %i \n", ev_set.size());
         std::ofstream myfile_ev;
-        myfile_ev.open("/home/laura/Documents/Data_collection/evidence_mat.m", std::ios::app);
+        myfile_ev.open("/home/amigo/Documents/Data_collection/evidence_mat.m", std::ios::app);
         myfile_ev << "evidence{"<< cycle<<"}=[";
         for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
             //Plot evidence:
@@ -584,7 +584,7 @@ void HypothesisTree::showStatistics() {
         //std::cout << "   MAP Hypothesis objects         = " << std::endl;
         std::list<SemanticObject*> objects = getMAPObjects();
         std::ofstream myfile_map;
-        myfile_map.open("/home/laura/Documents/Data_collection/map_mat.m", std::ios::app);
+        myfile_map.open("/home/amigo/Documents/Data_collection/map_mat.m", std::ios::app);
         myfile_map << "MAP{"<< cycle<<"}=[";
         for(std::list<SemanticObject*>::iterator it_obj = objects.begin(); it_obj != objects.end(); ++it_obj) {
             SemanticObject& obj = **it_obj;
@@ -597,7 +597,7 @@ void HypothesisTree::showStatistics() {
 
     void HypothesisTree::showHypP(int cycle){
         std::ofstream myfile_hyp;
-        myfile_hyp.open("/home/laura/Documents/Data_collection/hyp_mat.m", std::ios::app);
+        myfile_hyp.open("/home/amigo/Documents/Data_collection/hyp_mat.m", std::ios::app);
         myfile_hyp << "hyp{"<< cycle<<"}=[";
         std::list<Hypothesis *> allHyps = getHypotheses();
         for (std::list<Hypothesis *>::iterator it_hyp = allHyps.begin(); it_hyp != allHyps.end(); ++it_hyp) {
@@ -610,7 +610,7 @@ void HypothesisTree::showStatistics() {
 
     void HypothesisTree::showTrail(int cycle){
         std::ofstream myfile_tra;
-        myfile_tra.open("/home/laura/Documents/Data_collection/trail_mat.m", std::ios::app);
+        myfile_tra.open("/home/amigo/Documents/Data_collection/trail_mat.m", std::ios::app);
         myfile_tra << "trail{"<< cycle<<"}=[";
         myfile_tra << TrailStorage::getInstance().getTrail().size();
         myfile_tra<<"];"<<"\n";
