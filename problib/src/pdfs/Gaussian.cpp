@@ -125,7 +125,7 @@ bool Gaussian::getExpectedValue(arma::vec& v) const {
 	return true;
 }
 
-double Gaussian::getDensity(const arma::vec& v1, const arma::vec& v2, const arma::mat& S, double max_mah_dist) const {
+double Gaussian::getDensity(const arma::vec& v1, const arma::vec& v2, const arma::mat& S, double chi_squared) const {
 	// check dimensions
 	assert(v1.n_elem == v2.n_elem && v1.n_elem == S.n_rows);
 
@@ -144,7 +144,7 @@ double Gaussian::getDensity(const arma::vec& v1, const arma::vec& v2, const arma
 	assert(mahalanobis_dist_sq >= 0);
 
 	// threshold to 0 if maximum mahalanobis distance is exceeded
-	if (max_mah_dist > 0 && mahalanobis_dist_sq > (max_mah_dist * max_mah_dist)) {
+	if (chi_squared > 0 && mahalanobis_dist_sq > (chi_squared)) {
 		return 0;
 	}
 

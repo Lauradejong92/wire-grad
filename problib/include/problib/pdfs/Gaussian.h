@@ -168,7 +168,7 @@ protected:
 
 	void cloneStruct();
 
-	double getDensity(const arma::vec& v1, const arma::vec& v2, const arma::mat& S, double max_mah_dist = 0) const;
+	double getDensity(const arma::vec& v1, const arma::vec& v2, const arma::mat& S, double chi_squared = 0) const;
 
 #define CHECK_INITIALIZED assert_msg(ptr_, "Gaussian was not yet initialized.")
 

@@ -62,9 +62,9 @@ void generateEvidence() {
 	world_evidence.header.frame_id = "/map";
 
 	// Add evidence
-	addEvidence(world_evidence, 2, 2, 3, "mug", "red");
-    addEvidence(world_evidence, 2, 2.25, 3, "mug", "red");
-    addEvidence(world_evidence, 2, 2.5, 3, "mug", "red");
+	addEvidence(world_evidence, 2, 1, 3, "mug", "red");
+    addEvidence(world_evidence, 2.25, 1, 3, "mug", "red");
+    addEvidence(world_evidence, 2.5, 1, 3, "mug", "red");
 
 	// Publish results
 	world_evidence_publisher_.publish(world_evidence);

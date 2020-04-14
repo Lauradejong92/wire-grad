@@ -549,15 +549,15 @@ void HypothesisTree::showStatistics() {
 //    std::cout << "   Max probability             = " << getMAPHypothesis().getProbability() << std::endl;
 //    std::cout << "   Tree height                 = " << tree_height_ << std::endl;
 //    std::cout << "----" << std::endl;
-    for (const auto hyp: leafs_){
-        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
-        for(const auto obj: hyp->getObjects()){
-            //SemanticObject& obj = **it_obj;
-            const Property* my_prop = obj->getProperty("position");
-            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
-            std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
-        }
-    }
+//    for (const auto hyp: leafs_){
+//        std::cout << "             Hyp: P="<< hyp->getProbability()<< std::endl;
+//        for(const auto obj: hyp->getObjects()){
+//            //SemanticObject& obj = **it_obj;
+//            const Property* my_prop = obj->getProperty("position");
+//            std::cout << "           Obj: " << obj->getID()<< " at " <<my_prop->toString()<<std::endl;
+//            std::cout << "       Trail: " <<obj->getEvMap()[0] << "   "<<obj->getEvMap()[1] << "   "<<obj->getEvMap()[2] << "   "<<obj->getEvMap()[3] << "   "<<obj->getEvMap()[4] << std::endl;
+//        }
+//    }
         std::cout << "---------------------------------------------------------------------------" <<  std::endl;
 }
 
