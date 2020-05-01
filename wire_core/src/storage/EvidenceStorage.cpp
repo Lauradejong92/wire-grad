@@ -50,68 +50,101 @@ namespace mhf {
     }
 
     void EvidenceStorage::cluster(int setsize) {
-
-        //int setsize= 5;
-        float sigma = 0.005;
-        int scale = 5;//3
-
         if (evidenceMap.size()>=setsize){
+            // Variables
+            double chi_2_inner=16.266; //99.9%
+            double chi_2_outer=80; // 2*chi 99.9
+            float r_in =0.01; //1cm
+            float r_out = 0.02; //2cm
+
+            //Covariance matrix
+            arma::mat S(3,3);
+            S <<0.0655e-5<<-0.0015e-5<<-0.0366e-5<<arma::endr <<-0.0015e-5 <<  0.0319e-5 << 0.0087e-5 << arma::endr << -0.0366e-5 << 0.0087e-5 << 0.5385e-5;
+
+
+//                //// Radius gives MD
+//            arma::vec diff(3);
+//            diff << 0.0025 <<arma::endr << 0 << arma::endr <<0;
+//            double mahalanobis_dist_sq = arma::dot(arma::inv(S) * diff, diff);
+//            printf("maha: %f \n", mahalanobis_dist_sq);
+
+
             // remove old clusters
             TrailStorage::getInstance().clear();
-            //printf("Start clustering: \n");
 
             //For oldest set (= at time-setsize)
             for (const auto seed_ev : evidenceMap.begin()->second){ //todo test met: prev(evidenceMap.end()) ipv evidenceMap.begin()
                 std::vector<Evidence> cluster_vector;
-                //cluster_vector.emplace_back(seed_ev);
-                //printf("cluster size: %i",cluster_vector.size());
 
                 //todo: check appearance similarity
                 //find position of cluster seed of
                 pbl::Vector origin_pos =EvidenceStorage().getPos(&seed_ev);
 
-                //Compare to other points in time
+                //Rough pre-selection check
                 for(const auto next_ev_set : evidenceMap){ //evidence set from time t
                     int candidate = 0;
                     for (const auto next_ev: next_ev_set.second){ //evidence from time t
-                        //printf("a");
-                        //printf("loop 3");
                         pbl::Vector next_pos =EvidenceStorage().getPos(&next_ev);
                         float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
+                        //double mahalanobis_dist_sq = arma::dot(arma::inv(S) * (origin_pos-next_pos), (origin_pos-next_pos));
+                         //printf("maha: %f \n", mahalanobis_dist_sq);
                         //printf("distance = %f \n",distance);
-                        //todo: more fancy clustering & comparison than first position compared to all
                         if (candidate == 0){
-                            if (distance<=sigma){
-                                //printf("cluster root= (%f,%f) \n",origin_pos(0),origin_pos(1));
+                            if (distance<=r_in){
                                 candidate=1;
                                 cluster_vector.emplace_back(next_ev);
-                                //std::cout << "          Cluster_check: " << next_pos(1) << std::endl;
-
-                            } else if (distance<=scale*sigma){
-                                //printf("cluster not free 1 \n");
+                                //double mahalanobis_dist_sq = arma::dot(arma::inv(S) * diff, diff);
+                            } else if (distance<=r_out){
                                 candidate=2;
                                 break;
                             }
-                        } else if (distance<=scale*sigma){
-                            //printf("cluster not free 2\n");
+                        } else if (distance<=r_out){
                             candidate=2;
                             break;
-
                         }
                     }
-                    //printf("Flag \n");
 
                     if (candidate !=1){
                         //terminate early
-                        //printf("Seed forms no cluster \n");
+                        cluster_vector.clear();
+                        break;
+                    }
+                    //TrailStorage::getInstance().add(cluster_vector);
+                }
+
+                //True check
+                int cluster_unfit=0;
+                if (cluster_vector.size()){
+                    //find mean
+                    pbl::Vector mean_pos={0,0,0};
+                    for (const auto clustered_ev: cluster_vector){
+                        mean_pos=mean_pos+EvidenceStorage().getPos(&clustered_ev);
+                    }
+                    mean_pos=mean_pos/setsize;
+                    //printf("Points: %f, %f, %f \n", mean_pos(0), mean_pos(1),mean_pos(2));
+
+                    //check if inner radius< 95 cert.
+                    for (const auto clustered_ev: cluster_vector){
+                        pbl::Vector diff =mean_pos-EvidenceStorage().getPos(&clustered_ev);
+                        double mahalanobis_dist_sq = arma::dot(arma::inv(S) * diff, diff);
+
+                        if (mahalanobis_dist_sq > chi_2_inner){
+                            printf("too far off with %f, %f, %f \n",diff[0],diff[1],diff[2]);
+                            cluster_unfit=1;
+                        } else {
+                            //printf("md: %f \n", mahalanobis_dist_sq);
+                        }
+                    }
+
+
+                    //check if outer radius is empty.
+
+
+                    if (cluster_unfit){
                         cluster_vector.clear();
                         break;
                     }
 
-                }
-
-                if (cluster_vector.size()){
-                    //printf("cluster found! \n");
                     TrailStorage::getInstance().add(cluster_vector);
                 }
             }

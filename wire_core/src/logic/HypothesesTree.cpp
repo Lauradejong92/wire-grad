@@ -277,12 +277,6 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
                 MAP_hypothesis_ = hyp_child;
             }
 
-            /*
-            if (leafs_.size() <= 3) {
-                ass_set->print();
-            }
-            */
-
             //printf("%i: new leaf with prob %f\n", leafs_.size(), hyp_child->probability_);
 
             DEBUG_INFO(" NEW LEAF: %p\n", hyp_child);
