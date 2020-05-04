@@ -275,6 +275,7 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
                 min_prob = hyp_child->getProbability() * max_min_prob_ratio_;
 
                 MAP_hypothesis_ = hyp_child;
+                //printf("check %f \n", MAP_hypothesis_->getProbability());
             }
 
             //printf("%i: new leaf with prob %f\n", leafs_.size(), hyp_child->probability_);

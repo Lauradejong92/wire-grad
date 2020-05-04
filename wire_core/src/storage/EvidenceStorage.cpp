@@ -94,11 +94,8 @@ namespace mhf {
                                 candidate=1;
                                 cluster_vector.emplace_back(next_ev);
                                 //double mahalanobis_dist_sq = arma::dot(arma::inv(S) * diff, diff);
-                            } else if (distance<=r_out){
-                                candidate=2;
-                                break;
                             }
-                        } else if (distance<=r_out){
+                        } else if (distance<=r_in){
                             candidate=2;
                             break;
                         }
