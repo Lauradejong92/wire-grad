@@ -54,6 +54,11 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
     leafs_.push_back(empty_hyp);
     root_ = empty_hyp;
     MAP_hypothesis_ = empty_hyp;
+
+    std::ofstream myfile_time;
+    myfile_time.open("/home/amigo/Documents/Data_collection/time_mat.m");
+    myfile_time << " ";
+    myfile_time.close();
 }
 
 HypothesisTree::~HypothesisTree() {
@@ -77,6 +82,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
+    double tstart = ros::Time::now().toSec();
+
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
@@ -109,7 +116,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 //#endif
 
     DEBUG_INFO("HypothesesTree::processMeasurements - end\n");
-    showStatistics();
+    double tend = ros::Time::now().toSec();
+    showTime(tend-tstart);
 }
 
 /* ****************************************************************************** */
@@ -389,13 +397,20 @@ const std::list<SemanticObject*>& HypothesisTree::getMAPObjects() const {
 /* *                              PRINT METHODS                                 * */
 /* ****************************************************************************** */
 
-void HypothesisTree::showStatistics() {
-    static int nRep = 0;
-    nRep++;
-    std::cout << "---------------------------------------------------------------------------" << std::endl;
-    std::cout << "Report of Cycle                   = " << nRep << std::endl;
-    static double tstart = ros::Time::now().toSec();
-    printf("-- %f --\n", ros::Time::now().toSec()-tstart);
-}
+void HypothesisTree::showTime(double delta_t) {
+        static int nRep = 0;
+        nRep++;
+        std::ofstream myfile_time;
+        myfile_time.open("/home/amigo/Documents/Data_collection/time_mat.m", std::ios::app);
+        myfile_time << "time{" << nRep << "}=[";
+        myfile_time << delta_t;
+        myfile_time << "];" << "\n";
+        myfile_time.close();
+
+        //std::cout << "---------------------------------------------------------------------------" << std::endl;
+        //std::cout << "Report of Cycle                   = " << nRep << std::endl;
+
+//    printf("-- %f --\n", ros::Time::now().toSec()-tstart);
+    }
 
 }

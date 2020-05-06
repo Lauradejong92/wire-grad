@@ -105,7 +105,7 @@ public:
 
     /* PRINT METHODS */
 
-    void showStatistics();
+    void showTime(double delta_t);
 
 
 protected:
