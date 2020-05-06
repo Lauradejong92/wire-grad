@@ -126,7 +126,7 @@ namespace mhf {
                         double mahalanobis_dist_sq = arma::dot(arma::inv(S) * diff, diff);
 
                         if (mahalanobis_dist_sq > chi_2_inner){
-                            printf("too far off with %f, %f, %f \n",diff[0],diff[1],diff[2]);
+                            //printf("too far off with %f, %f, %f \n",diff[0],diff[1],diff[2]);
                             cluster_unfit=1;
                         } else {
                             //printf("md: %f \n", mahalanobis_dist_sq);

@@ -83,6 +83,12 @@ HypothesisTree::HypothesisTree(int num_max_hyps, double max_min_prob_ratio) : n_
         myfile_tra.open("/home/amigo/Documents/Data_collection/trail_mat.m");
         myfile_tra << " ";
         myfile_tra.close();
+
+        //time
+        std::ofstream myfile_time;
+        myfile_time.open("/home/amigo/Documents/Data_collection/time_mat.m");
+        myfile_time << " ";
+        myfile_time.close();
 }
 
 HypothesisTree::~HypothesisTree() {
@@ -108,7 +114,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
-    showEvidence(ev_set,nRep);//print
+    double tstart = ros::Time::now().toSec();
+    //showEvidence(ev_set,nRep);//print
 
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
@@ -129,7 +136,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     applyAssignments();
     ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
-    printf("Hyps before pruning:                     %i \n",leafs_.size());
+    //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
     pruneTrailConflicts(setsize);
     pruneTree2(ev_set.getTimestamp());
@@ -148,12 +155,13 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
 
-    showMAP(nRep);
-    showHypP(nRep);
-    showTrail(nRep);
+    //showMAP(nRep);
+    //showHypP(nRep);
+    //showTrail(nRep);
 
-    showStatistics();
-
+    //showStatistics();
+        double tend = ros::Time::now().toSec();
+        showTime(tend-tstart);
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
@@ -495,7 +503,7 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
             }
         }
         MAP_hypothesis_=best_hyp;
-        printf("MAP prob: %f \n", best_hyp->getProbability());
+        //printf("MAP prob: %f \n", best_hyp->getProbability());
 
         // now remove too large drops
         double min_prob = MAP_hypothesis_->getProbability()*prob_ratio;
@@ -611,5 +619,14 @@ void HypothesisTree::showStatistics() {
         myfile_tra<<"];"<<"\n";
         myfile_tra.close();
     }
-
+    void HypothesisTree::showTime(double delta_t) {
+        static int nRep = 0;
+        nRep++;
+        std::ofstream myfile_time;
+        myfile_time.open("/home/amigo/Documents/Data_collection/time_mat.m", std::ios::app);
+        myfile_time << "time{" << nRep << "}=[";
+        myfile_time << delta_t;
+        myfile_time << "];" << "\n";
+        myfile_time.close();
+    }
 }

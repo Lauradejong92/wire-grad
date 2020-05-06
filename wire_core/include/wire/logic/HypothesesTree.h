@@ -110,6 +110,7 @@ public:
     void showMAP(int cycle);
     void showHypP(int cycle);
     void showTrail(int cycle);
+    void showTime(double delta_t);
 
 protected:
 
