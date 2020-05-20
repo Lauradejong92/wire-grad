@@ -136,7 +136,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
-    pruneTrailConflicts(setsize);
+    findTrailConflicts(setsize);
     pruneTree2(ev_set.getTimestamp());
 
 
@@ -160,6 +160,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //showStatistics();
 //        double tend = ros::Time::now().toSec();
 //        showTime(tend-tstart);
+    printf("Iter: %i \n ------------------------------------------- \n", n_updates_);
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
@@ -429,7 +430,7 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
     DEBUG_INFO("pruneTree - end\n");
 }
 
-void HypothesisTree::pruneTrailConflicts(int setsize) {
+void HypothesisTree::findTrailConflicts(int setsize) {
 
     for (const auto cluster : TrailStorage::getInstance().getTrail()) {
         std::list<Hypothesis*> weak_hyps;
@@ -469,14 +470,14 @@ void HypothesisTree::pruneTrailConflicts(int setsize) {
         //printf("Strong hyps found for this cluster: %i \n",strong_hyps.size());
         //now prune all unmarked parents
         if (weak_hyps.size()) {
-            int count =0;
+            //int count =0;
             for (const auto leaf_hyp: leafs_) {
                 for (const auto weak_hyp: weak_hyps) {
                     if (leaf_hyp == weak_hyp) {
                         //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
                         leaf_hyp->setProbability(leaf_hyp->getProbability()*1e-8);
                         //leaf_hyp->setProbability(0);
-                        count++;
+                        //count++;
                     }
                 }
             }
@@ -582,7 +583,7 @@ void HypothesisTree::showStatistics() {
     void HypothesisTree::showMAP() {
         std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(n_updates_) << std::endl;
 
-        //std::cout << "   MAP Hypothesis objects         = " << std::endl;
+        std::cout << "   MAP Hypothesis objects         = " << getMAPObjects().size()<< std::endl;
         std::list<SemanticObject*> objects = getMAPObjects();
         std::ofstream myfile_map;
         myfile_map.open("/home/amigo/Documents/Data_collection/map_mat.m", std::ios::app);
@@ -607,6 +608,7 @@ void HypothesisTree::showStatistics() {
         }
         myfile_hyp<<"];"<<"\n";
         myfile_hyp.close();
+        printf("        nHyps = %i \n",leafs_.size());
     }
 
     void HypothesisTree::showTrail(){
@@ -616,6 +618,7 @@ void HypothesisTree::showStatistics() {
         myfile_tra << TrailStorage::getInstance().getTrail().size();
         myfile_tra<<"];"<<"\n";
         myfile_tra.close();
+        printf("        Trail = %i \n",TrailStorage::getInstance().getTrail().size());
     }
     void HypothesisTree::showTime(double delta_t) {
         std::ofstream myfile_time;

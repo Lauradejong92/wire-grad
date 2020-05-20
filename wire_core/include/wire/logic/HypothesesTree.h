@@ -144,7 +144,7 @@ protected:
     void pruneTree(const Time& timestamp);
 
     // Prune tree based on clusters
-    void pruneTrailConflicts(int setsize);
+    void findTrailConflicts(int setsize);
     void pruneTree2(const Time& timestamp);
 
 
