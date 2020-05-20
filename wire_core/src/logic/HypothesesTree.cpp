@@ -103,8 +103,6 @@ HypothesisTree::~HypothesisTree() {
 void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     DEBUG_INFO("HypothesesTree::processMeasurements\n");
     static int setsize =5;
-    static int nRep = 0;
-    nRep++;
 
     if (ev_set.size() == 0) {
         return;
@@ -114,8 +112,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
-    double tstart = ros::Time::now().toSec();
-    //showEvidence(ev_set,nRep);//print
+//    double tstart = ros::Time::now().toSec();
+    showEvidence(ev_set);//print
 
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
@@ -155,13 +153,13 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
 
-    //showMAP(nRep);
-    //showHypP(nRep);
-    //showTrail(nRep);
+    showMAP();
+    showHypP();
+    showTrail();
 
     //showStatistics();
-        double tend = ros::Time::now().toSec();
-        showTime(tend-tstart);
+//        double tend = ros::Time::now().toSec();
+//        showTime(tend-tstart);
 
 #ifdef MHF_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_total);
@@ -564,12 +562,12 @@ void HypothesisTree::showStatistics() {
         std::cout << "---------------------------------------------------------------------------" <<  std::endl;
 }
 
-    void HypothesisTree::showEvidence(const EvidenceSet& ev_set, int cycle){
+    void HypothesisTree::showEvidence(const EvidenceSet& ev_set){
         //std::cout << "---------------------------------------------------------------------------" <<  std::endl;
         //printf("   Evidence size                  = %i \n", ev_set.size());
         std::ofstream myfile_ev;
         myfile_ev.open("/home/amigo/Documents/Data_collection/evidence_mat.m", std::ios::app);
-        myfile_ev << "evidence{"<< cycle<<"}=[";
+        myfile_ev << "evidence{"<< n_updates_+1<<"}=[";
         for(EvidenceSet::const_iterator it_ev = ev_set.begin(); it_ev != ev_set.end(); ++it_ev) {
             //Plot evidence:
             Evidence* myEvid = *it_ev;
@@ -581,14 +579,14 @@ void HypothesisTree::showStatistics() {
         myfile_ev.close();
     }
 
-    void HypothesisTree::showMAP(int cycle) {
-        std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(cycle) << std::endl;
+    void HypothesisTree::showMAP() {
+        std::cout << "   Object storage size            = " << ObjectStorage::getInstance().getStorageSize(n_updates_) << std::endl;
 
         //std::cout << "   MAP Hypothesis objects         = " << std::endl;
         std::list<SemanticObject*> objects = getMAPObjects();
         std::ofstream myfile_map;
         myfile_map.open("/home/amigo/Documents/Data_collection/map_mat.m", std::ios::app);
-        myfile_map << "MAP{"<< cycle<<"}=[";
+        myfile_map << "MAP{"<< n_updates_<<"}=[";
         for(std::list<SemanticObject*>::iterator it_obj = objects.begin(); it_obj != objects.end(); ++it_obj) {
             SemanticObject& obj = **it_obj;
             const Property* my_prop = obj.getProperty("position");
@@ -598,10 +596,10 @@ void HypothesisTree::showStatistics() {
         myfile_map.close();
     }
 
-    void HypothesisTree::showHypP(int cycle){
+    void HypothesisTree::showHypP(){
         std::ofstream myfile_hyp;
         myfile_hyp.open("/home/amigo/Documents/Data_collection/hyp_mat.m", std::ios::app);
-        myfile_hyp << "hyp{"<< cycle<<"}=[";
+        myfile_hyp << "hyp{"<< n_updates_<<"}=[";
         std::list<Hypothesis *> allHyps = getHypotheses();
         for (std::list<Hypothesis *>::iterator it_hyp = allHyps.begin(); it_hyp != allHyps.end(); ++it_hyp) {
             Hypothesis &myHyp = **it_hyp;
@@ -611,20 +609,18 @@ void HypothesisTree::showStatistics() {
         myfile_hyp.close();
     }
 
-    void HypothesisTree::showTrail(int cycle){
+    void HypothesisTree::showTrail(){
         std::ofstream myfile_tra;
         myfile_tra.open("/home/amigo/Documents/Data_collection/trail_mat.m", std::ios::app);
-        myfile_tra << "trail{"<< cycle<<"}=[";
+        myfile_tra << "trail{"<< n_updates_<<"}=[";
         myfile_tra << TrailStorage::getInstance().getTrail().size();
         myfile_tra<<"];"<<"\n";
         myfile_tra.close();
     }
     void HypothesisTree::showTime(double delta_t) {
-        static int nRep = 0;
-        nRep++;
         std::ofstream myfile_time;
         myfile_time.open("/home/amigo/Documents/Data_collection/time_mat.m", std::ios::app);
-        myfile_time << "time{" << nRep << "}=[";
+        myfile_time << "time{" << n_updates_ << "}=[";
         myfile_time << delta_t;
         myfile_time << "];" << "\n";
         myfile_time.close();

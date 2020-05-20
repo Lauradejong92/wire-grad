@@ -99,13 +99,13 @@ namespace mhf {
         myfile_obj << "];"<<"\n";
         myfile_obj.close();
 
-        // print overzicht:
-        cout << "   The object storage consists of: " << endl;
-        for (int k = 0; k <= ID_ -1; k++){
-            if (count_count[k]!=0)
-                cout << "     -Object " << k <<", stored " << count_count[k] << " times" << endl;
-        }
-        //*/
+//        // print overzicht:
+//        cout << "   The object storage consists of: " << endl;
+//        for (int k = 0; k <= ID_ -1; k++){
+//            if (count_count[k]!=0)
+//                cout << "     -Object " << k <<", stored " << count_count[k] << " times" << endl;
+//        }
+//        //*/
 
         return objects_.size();
     }

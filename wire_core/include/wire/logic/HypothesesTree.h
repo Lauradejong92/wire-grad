@@ -106,10 +106,10 @@ public:
     /* PRINT METHODS */
 
     void showStatistics();
-    void showEvidence(const EvidenceSet& ev_set, int cycle);
-    void showMAP(int cycle);
-    void showHypP(int cycle);
-    void showTrail(int cycle);
+    void showEvidence(const EvidenceSet& ev_set);
+    void showMAP();
+    void showHypP();
+    void showTrail();
     void showTime(double delta_t);
 
 protected:
