@@ -10,7 +10,7 @@ using namespace std;
 
 namespace mhf {
 
-    ObjectStorage *ObjectStorage::instance_ = 0;
+    ObjectStorage *ObjectStorage::instance_ = nullptr;
 
     ObjectStorage &ObjectStorage::getInstance() {
         if (instance_) {
@@ -24,9 +24,7 @@ namespace mhf {
 
     }
 
-    ObjectStorage::~ObjectStorage() {
-
-    }
+    ObjectStorage::~ObjectStorage() = default;
 
     void ObjectStorage::addObject(SemanticObject *obj) {
         objects_.push_back(obj);
@@ -49,13 +47,13 @@ namespace mhf {
 
         //cout << endl << "ObjectStorage::match" << endl;
 
-        for (list<SemanticObject *>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
-            SemanticObject &obj = **it_obj;
+        for (auto & object : objects_) {
+            SemanticObject &obj = *object;
             obj.propagate(ev.getTimestamp());
         }
 
-        for (list<SemanticObject *>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
-            SemanticObject &obj = **it_obj;
+        for (auto & object : objects_) {
+            SemanticObject &obj = *object;
 
             double prob_existing = KnowledgeDatabase::getInstance().getProbabilityExisting(ev, obj);
             if (prob_existing > 0) {
@@ -88,8 +86,8 @@ namespace mhf {
             count_count.push_back(0);
 
         //schrijf naar file
-        for(list<SemanticObject*>::iterator it_obj = objects_.begin(); it_obj != objects_.end(); ++it_obj) {
-            SemanticObject& obj = **it_obj;
+        for(auto & object : objects_) {
+            SemanticObject& obj = *object;
             count_count[obj.getID()]++;
 
             const Property* my_prop = obj.getProperty("position");

@@ -95,8 +95,6 @@ public:
 
     const Hypothesis& getMAPHypothesis() const;
 
-    int getHeight() const;
-
 
     /* SETTERS */
 
