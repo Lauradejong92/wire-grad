@@ -27,6 +27,7 @@
 #include <cassert>
 
 #include <iostream>
+#include <ros/ros.h>
 
 #ifdef MHF_MEASURE_TIME
     #include <time.h>
@@ -107,8 +108,9 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
-//    double tstart = ros::Time::now().toSec();
+
     showEvidence(ev_set);//print
+    double tstart = ros::Time::now().toSec();
 
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
@@ -116,8 +118,28 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(auto it_ev : ev_set) {
-        ObjectStorage::getInstance().match(*it_ev);
-        //std::cout << "Evidence added: " << *it_ev << std::endl;
+        //Find if part of trail
+        Evidence* mark= nullptr;
+        if (!TrailStorage::getInstance().getTrails().empty()){
+            for(const auto& trail:TrailStorage::getInstance().getTrails()){
+                //std::cout << it_ev << "And " <<trail[trail.size()-1].getAdress()<< "size: "<< trail.size()<< std::endl;
+                if (it_ev==trail[trail.size()-1].getAdress()){
+                    mark=trail[trail.size()-2].getAdress();
+                }
+            }
+        }
+
+        if (!mark){
+            //if in Trail
+            ObjectStorage::getInstance().match(*it_ev);
+        } else {
+            //if not in Trail
+            ObjectStorage::getInstance().matchTrail(*it_ev, mark);
+        }
+
+
+
+        //std::cout << "Evidence added: " << it_ev << std::endl;
     }
 
     t_last_update_ = ev_set.getTimestamp();
@@ -129,11 +151,10 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     applyAssignments();
     ObjectStorage::getInstance().update(ev_set.getTimestamp());
 
-    //printf("Hyps before pruning:                     %i \n",leafs_.size());
+    printf("Hyps before pruning:                     %li \n",leafs_.size());
     //Clusterbased pruning
-    findTrailConflicts(setsize);
-    pruneTree2(ev_set.getTimestamp());
-
+    //findTrailConflicts(setsize);
+    //pruneTree2(ev_set.getTimestamp());
 
     // clear old hypotheses leafs
     // The hypotheses will still be there to form a tree, but do not contain any objects anymore
@@ -147,14 +168,15 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     ++n_updates_;
 
-
+    double tend = ros::Time::now().toSec();
+    showTime(tend-tstart);
     showMAP();
     showHypP();
     showTrail();
+    showStatistics();
 
-    //showStatistics();
-//        double tend = ros::Time::now().toSec();
-//        showTime(tend-tstart);
+
+
     printf("Iter: %li \n ------------------------------------------- \n", n_updates_);
 
 #ifdef MHF_MEASURE_TIME
@@ -195,12 +217,25 @@ void HypothesisTree::expandTree(const EvidenceSet& ev_set) {
 
     std::list<Assignment*> new_assignments;
     std::list<Assignment*> clutter_assignments;
-    for(auto it_ev : ev_set) {
-        // new
-        new_assignments.push_back(new Assignment(Assignment::NEW, it_ev, nullptr, KnowledgeDatabase::getInstance().getProbabilityNew(*it_ev)));
+    for(const auto it_ev : ev_set) {
+        bool mark= false;
+        if (!TrailStorage::getInstance().getTrails().empty()){
+            for(const auto& trail:TrailStorage::getInstance().getTrails()){
+                //std::cout << it_ev << "And " <<trail[trail.size()-1].getAdress()<< "size: "<< trail.size()<< std::endl;
+                if (it_ev==trail[trail.size()-1].getAdress()){
+                    mark=true;
+                }
+            }
+        }
 
-        // clutter
-        clutter_assignments.push_back(new Assignment(Assignment::CLUTTER, it_ev, nullptr, KnowledgeDatabase::getInstance().getProbabilityClutter(*it_ev)));
+        if (!mark){
+            // new
+            new_assignments.push_back(new Assignment(Assignment::NEW, it_ev, nullptr,KnowledgeDatabase::getInstance().getProbabilityNew(*it_ev)));
+
+            // clutter
+            clutter_assignments.push_back(new Assignment(Assignment::CLUTTER, it_ev, nullptr,KnowledgeDatabase::getInstance().getProbabilityClutter(
+                                                                 *it_ev)));
+        }
     }
 
 #ifdef MHF_MEASURE_TIME
@@ -423,7 +458,7 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 
 void HypothesisTree::findTrailConflicts(int setsize) {
 
-    for (const auto& cluster : TrailStorage::getInstance().getTrail()) {
+    for (const auto& cluster : TrailStorage::getInstance().getTrails()) {
         std::list<Hypothesis*> weak_hyps;
         //printf("     next cluster:\n");
         //std::cout << "          Evidence:" << cluster[4].getAdress() << std::endl;
@@ -603,10 +638,10 @@ void HypothesisTree::showStatistics() {
         std::ofstream myfile_tra;
         myfile_tra.open("/home/amigo/Documents/Data_collection/trail_mat.m", std::ios::app);
         myfile_tra << "trail{"<< n_updates_<<"}=[";
-        myfile_tra << TrailStorage::getInstance().getTrail().size();
+        myfile_tra << TrailStorage::getInstance().getTrails().size();
         myfile_tra<<"];"<<"\n";
         myfile_tra.close();
-        printf("        Trail = %i \n",TrailStorage::getInstance().getTrail().size());
+        printf("        Trail = %i \n",TrailStorage::getInstance().getTrails().size());
     }
     void HypothesisTree::showTime(double delta_t) {
         std::ofstream myfile_time;

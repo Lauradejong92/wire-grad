@@ -52,7 +52,7 @@ const Time& TrailStorage::getTimestamp() const {
         return timestamp_;
     }
 
-const std::vector<std:: vector<Evidence>> TrailStorage::getTrail() const {
+const std::vector<std:: vector<Evidence>> TrailStorage::getTrails() const {
     return trailSet_;
 }
 

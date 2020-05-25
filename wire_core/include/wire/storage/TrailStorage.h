@@ -34,7 +34,7 @@ public:
 
     const Time& getTimestamp() const;
 
-    const std::vector<std:: vector<Evidence>> getTrail() const;
+    const std::vector<std:: vector<Evidence>> getTrails() const;
 
     /**
      *  Returns a read-only (constant) iterator that points to the

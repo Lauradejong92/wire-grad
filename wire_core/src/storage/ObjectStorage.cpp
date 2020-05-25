@@ -65,6 +65,37 @@ namespace mhf {
         }
     }
 
+    void ObjectStorage::matchTrail(const Evidence &ev, Evidence* prior_ev) {
+        int setsize=5;
+        //cout << endl << "ObjectStorage::match" << endl;
+
+        for (auto & object : objects_) {
+            SemanticObject &obj = *object;
+            obj.propagate(ev.getTimestamp());
+        }
+
+        for (auto & object : objects_) {
+
+            SemanticObject &obj = *object;
+            double prob_existing = 0;
+            //if prior is prior ev
+            if (obj.getEvMap().size()==setsize){
+                if (obj.getEvMap()[setsize-1]==prior_ev){
+                    prob_existing = KnowledgeDatabase::getInstance().getProbabilityExisting(ev, obj);
+                }
+            } else {
+                prob_existing = KnowledgeDatabase::getInstance().getProbabilityExisting(ev, obj);
+            }
+
+            if (prob_existing > 0) {
+
+                //cout << "Adding evidence " << &ev << " to object " << &obj << endl;
+
+                obj.addPotentialAssignment(ev, prob_existing);
+            }
+        }
+    }
+
     void ObjectStorage::update(const Time &timestamp) {
         for (const auto it_obj: objects_) {
             if (timestamp != it_obj->getLastUpdateTime()) {

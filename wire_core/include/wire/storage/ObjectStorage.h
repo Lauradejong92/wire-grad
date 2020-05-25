@@ -28,6 +28,7 @@ public:
     long getUniqueID();
 
     void match(const Evidence& ev);
+    void matchTrail(const Evidence& ev, Evidence* prior_ev);
 
     void update(const Time& timestamp);
 
