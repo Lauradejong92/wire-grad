@@ -119,6 +119,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
         ObjectStorage::getInstance().match(*it_ev);
         //std::cout << "Evidence added: " << *it_ev << std::endl;
     }
+        std::cout << "Evidence added: " << ev_set.size() << std::endl;
 
     t_last_update_ = ev_set.getTimestamp();
 
@@ -580,6 +581,8 @@ void HypothesisTree::showStatistics() {
             SemanticObject& obj = *object;
             const Property* my_prop = obj.getProperty("position");
             myfile_map << obj.getID()<<", "<<my_prop->toString()<<"\n";
+//            const Property* myprop2 = obj.getProperty("color");
+            std::cout << my_prop->toString()<<std::endl;
         }
         myfile_map << "];"<<"\n";
         myfile_map.close();

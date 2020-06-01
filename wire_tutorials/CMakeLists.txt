@@ -28,3 +28,6 @@ target_link_libraries(get_world_state ${catkin_LIBRARIES})
 
 add_executable(generate_evidence src/generate_evidence.cpp) 
 target_link_libraries(generate_evidence ${catkin_LIBRARIES})
+
+add_executable(checkers src/checkers.cpp)
+target_link_libraries(checkers ${catkin_LIBRARIES})
