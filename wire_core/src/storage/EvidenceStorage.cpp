@@ -18,7 +18,7 @@ namespace mhf {
     EvidenceStorage::EvidenceStorage() : timestamp_(-1) {
     }
 
-    EvidenceStorage* EvidenceStorage::instance_ = 0;
+    EvidenceStorage* EvidenceStorage::instance_ = nullptr;
 
     EvidenceStorage& EvidenceStorage::getInstance() {
         if (instance_) {
@@ -29,8 +29,7 @@ namespace mhf {
     }
 
 
-    EvidenceStorage::~EvidenceStorage() {
-    }
+    EvidenceStorage::~EvidenceStorage() = default;
 
     pbl::Vector EvidenceStorage::getPos(const Evidence* ev){
 
@@ -56,6 +55,7 @@ namespace mhf {
             double chi_2_outer=80; // 2*chi 99.9
             float r_in =0.01; //1cm
             float r_out = 0.02; //2cm
+            double appearance_match=.99;
 
             //Covariance matrix
             arma::mat S(3,3);
@@ -73,11 +73,13 @@ namespace mhf {
             TrailStorage::getInstance().clear();
 
             //For oldest set (= at time-setsize)
-            for (const auto seed_ev : evidenceMap.begin()->second){ //todo test met: prev(evidenceMap.end()) ipv evidenceMap.begin()
+            for (const auto seed_ev : evidenceMap.begin()->second){
                 std::vector<Evidence> cluster_vector;
 
                 //todo: check appearance similarity
-                //find position of cluster seed of
+//                //find position of cluster seed of
+//                const Property* cluster_class = seed_ev.getProperty("class_label");
+//                const Property* cluster_color = seed_ev.getProperty("color");
                 pbl::Vector origin_pos =EvidenceStorage().getPos(&seed_ev);
 
                 //Rough pre-selection check
@@ -85,6 +87,7 @@ namespace mhf {
                     int candidate = 0;
                     for (const auto next_ev: next_ev_set.second){ //evidence from time t
                         pbl::Vector next_pos =EvidenceStorage().getPos(&next_ev);
+
                         float distance= sqrt((origin_pos(0)-next_pos(0))*(origin_pos(0)-next_pos(0))+(origin_pos(1)-next_pos(1))*(origin_pos(1)-next_pos(1)));
                         //double mahalanobis_dist_sq = arma::dot(arma::inv(S) * (origin_pos-next_pos), (origin_pos-next_pos));
                          //printf("maha: %f \n", mahalanobis_dist_sq);
@@ -99,6 +102,32 @@ namespace mhf {
                             candidate=2;
                             break;
                         }
+
+                        //Check appearance similarity
+//                        if (cluster_class) {
+//                            printf("and ");
+//                            std::cout << cluster_class->toString() << std::endl;
+//
+//                            const Property *comparing_class = next_ev.getProperty("class_label");
+//                            std::cout << comparing_class->toString() << std::endl;
+//                            if (cluster_class->getLikelihood(comparing_class->getValue())< appearance_match) {
+//                                printf("class wrong! ");
+//                                candidate=2;
+//                                break;
+//                            }
+//                        }
+
+//                        if (cluster_color) {
+//                            const Property *comparing_color = next_ev.getProperty("color");
+//                            if (cluster_color->getLikelihood(comparing_color->getValue())< appearance_match) {
+//                                printf("color wrong! ");
+//                                candidate=2;
+//                                break;
+//                                printf("color wrong! ");
+////                                std::cout << cluster_color->toString() << "and " << comparing_color->toString()
+////                                          << std::endl;
+//                            }
+//                        }
                     }
 
                     if (candidate !=1){
@@ -118,7 +147,7 @@ namespace mhf {
                         mean_pos=mean_pos+EvidenceStorage().getPos(&clustered_ev);
                     }
                     mean_pos=mean_pos/setsize;
-                    //printf("Points: %f, %f, %f \n", mean_pos(0), mean_pos(1),mean_pos(2));
+                    printf("Cluster mean: %f, %f, %f \n", mean_pos(0), mean_pos(1),mean_pos(2));
 
                     //check if inner radius< 95 cert.
                     for (const auto clustered_ev: cluster_vector){

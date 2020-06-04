@@ -108,7 +108,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
 //    double tstart = ros::Time::now().toSec();
-    showEvidence(ev_set);//print
+//    showEvidence(ev_set);//print
 
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
@@ -118,8 +118,18 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     for(auto it_ev : ev_set) {
         ObjectStorage::getInstance().match(*it_ev);
         //std::cout << "Evidence added: " << *it_ev << std::endl;
+//        if (it_ev->getProperty("color")){
+//        const Property* cluster_class = it_ev->getProperty("color");
+//        std::cout << cluster_class->toString() << std::endl;
+//        }
+//
+//        if (it_ev->getProperty("class_label")){
+//            const Property* cluster_class = it_ev->getProperty("class_label");
+//            std::cout << cluster_class->toString() << std::endl;
+//        }
+
     }
-        std::cout << "Evidence added: " << ev_set.size() << std::endl;
+        //std::cout << "Evidence added: " << ev_set.size() << std::endl;
 
     t_last_update_ = ev_set.getTimestamp();
 
@@ -149,9 +159,9 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
 
-    showMAP();
-    showHypP();
-    showTrail();
+    //showMAP();
+//    showHypP();
+//    showTrail();
 
     //showStatistics();
 //        double tend = ros::Time::now().toSec();
