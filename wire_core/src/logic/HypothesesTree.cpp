@@ -27,6 +27,7 @@
 #include <cassert>
 
 #include <iostream>
+#include <ros/ros.h>
 
 #ifdef MHF_MEASURE_TIME
     #include <time.h>
@@ -107,12 +108,13 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     timespec t_start_total, t_end_total;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_total);
 #endif
-//    double tstart = ros::Time::now().toSec();
-//    showEvidence(ev_set);//print
+
+    showEvidence(ev_set);//print
+    double tstart = ros::Time::now().toSec();
 
     //Add evidence to storage ???
-    EvidenceStorage::getInstance().add(ev_set,setsize);
-    EvidenceStorage::getInstance().cluster(setsize);
+    //EvidenceStorage::getInstance().add(ev_set,setsize);
+    //EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(auto it_ev : ev_set) {
@@ -142,8 +144,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
-    findTrailConflicts(setsize);
-    pruneTree2(ev_set.getTimestamp());
+    //findTrailConflicts(setsize);
+    //pruneTree2(ev_set.getTimestamp());
 
 
     // clear old hypotheses leafs
@@ -158,14 +160,15 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     ++n_updates_;
 
+    double tend = ros::Time::now().toSec();
+    showTime(tend-tstart);
+    showMAP();
+    showHypP();
+    showTrail();
 
-    //showMAP();
-//    showHypP();
-//    showTrail();
+    showStatistics();
 
-    //showStatistics();
-//        double tend = ros::Time::now().toSec();
-//        showTime(tend-tstart);
+//
     printf("Iter: %li \n ------------------------------------------- \n", n_updates_);
 
 #ifdef MHF_MEASURE_TIME
