@@ -18,6 +18,20 @@ OpenCV REQUIRED
 #  std_msgs
 )
 
+find_package(catkin REQUIRED COMPONENTS
+        roscpp
+        #  rospy
+        #  std_msgs
+        wire_msgs
+        problib
+        )
+
+#catkin_package(
+#        CATKIN_DEPENDS
+#        roscpp
+#        wire_msgs
+#        problib
+#)
 catkin_package()
 
 include_directories(
@@ -31,3 +45,4 @@ target_link_libraries( DisplayImage ${OpenCV_LIBS} )
 
 add_executable( DetectImage src/DetectImage.cpp )
 target_link_libraries( DetectImage ${OpenCV_LIBS} )
+target_link_libraries(DetectImage ${catkin_LIBRARIES})
