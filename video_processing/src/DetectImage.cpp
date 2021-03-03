@@ -140,12 +140,42 @@ void plotCircles(Mat image, vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vec
     }
 
     imshow("image", image);
-    waitKey(1000);
+    waitKey(10);
 }
+
+void storingData(vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vector<Vec3f> z){
+    static int countycount=0;
+    std::ofstream myfile;
+    myfile.open("/home/laura/Documents/Data_collection/soccer.m", std::ios::app);
+    myfile << "frame{"<< countycount<<"}=[";
+
+    for(size_t i=0; i<y.size(); i++) {
+        myfile<<"["<< y[i][0]<<", "<<y[i][1]<<", 1],\n";
+    }
+    for(size_t i=0; i<r.size(); i++) {
+        myfile<<"["<< r[i][0]<<", "<<r[i][1]<<", 2],\n";
+    }
+    for(size_t i=0; i<b.size(); i++) {
+        myfile<<"["<< b[i][0]<<", "<<b[i][1]<<", 3],\n";
+    }
+    for(size_t i=0; i<z.size(); i++) {
+        myfile<<"["<< z[i][0]<<", "<<z[i][1]<<", 4],\n";
+    }
+    myfile<<"];\n";
+    myfile.close();
+    countycount++;
+}
+
 
 
 int main(int argc, char** argv )
 {
+    //clear old storage file
+    std::ofstream myfile;
+    myfile.open("/home/laura/Documents/Data_collection/soccer.m");
+    myfile << "";
+    myfile.close();
+
     Scalar_<double> yellow= Scalar(110,225,250);
     Scalar_<double> red= Scalar(65,90,250);//70,80,250
     Scalar_<double> blue= Scalar(250,130,10);
@@ -195,9 +225,9 @@ int main(int argc, char** argv )
         plotCircles(image,y,r,b,z);
         //imshow(window_name, blueOnly);
 
-        //wait for for 10 ms until any key is pressed.
-        //If the 'Esc' key is pressed, break the while loop.
-        //If the any other key is pressed, continue the loop
+        storingData(y,r,b,z);
+
+
         //If any key is not pressed withing 10 ms, continue the loop
         if (waitKey(10) == 27)
         {
