@@ -11,6 +11,10 @@
 #include "wire_msgs/ObjectEvidence.h"
 #include "problib/conversions.h"
 
+#include <image_transport/image_transport.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+
 using namespace std;
 using namespace cv;
 
@@ -177,7 +181,7 @@ void addEvidence(wire_msgs::WorldEvidence& world_evidence, double x, double y, d
     posProp.attribute = "position";
 
     // Set position (x,y,z), set the covariance matrix as 0.005*identity_matrix
-    pbl::PDFtoMsg(pbl::Gaussian(pbl::Vector3(x, y, z), pbl::Matrix3(0.0005, 0.0005, 0.0005)), posProp.pdf);
+    pbl::PDFtoMsg(pbl::Gaussian(pbl::Vector3(x, y, z), pbl::Matrix3(1, 1, 1)), posProp.pdf);
     obj_evidence.properties.push_back(posProp);
 
     // Set the discrete class label property
@@ -239,9 +243,14 @@ int main(int argc, char** argv )
 // Initialize ros and create node handle
     ros::init(argc,argv,"dummy_evidence_publisher");
     ros::NodeHandle nh;
+    //ros::init(argc,argv,"image_publisher");
+    ros::NodeHandle ni;
+    image_transport::ImageTransport it(ni);
 
     // Subscriber/publisher
     world_evidence_publisher_ = nh.advertise<wire_msgs::WorldEvidence>("/world_evidence", 100);
+
+    image_transport::Publisher camera_publisher_ = it.advertise("camera/rgb/image_color", 1);
 
     //clear old storage file
     std::ofstream myfile;
@@ -266,8 +275,7 @@ int main(int argc, char** argv )
 
     //namedWindow(window_name, WINDOW_NORMAL); //create a window
 
-    while (true)
-    {
+    while (ros::ok()) {
         Mat image;
         bool bSuccess = cap.read(image); // read a new frame from video
 
@@ -301,15 +309,20 @@ int main(int argc, char** argv )
 
         //storingData(y,r,b,z);
         generateEvidence(y,r,b,z);
+
+        sensor_msgs::ImagePtr msg;
+        msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
+
+        camera_publisher_.publish(msg);
         ros_r.sleep();
 
 
-        //If any key is not pressed withing 10 ms, continue the loop
-        if (waitKey(10) == 27)
-        {
-            cout << "Esc key is pressed by user. Stoppig the video" << endl;
-            break;
-        }
+//        //If any key is not pressed withing 10 ms, continue the loop
+//        if (waitKey(10) == 27)
+//        {
+//            cout << "Esc key is pressed by user. Stoppig the video" << endl;
+//            break;
+//        }
     }
     return 0;
 }

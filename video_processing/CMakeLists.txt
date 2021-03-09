@@ -24,6 +24,8 @@ find_package(catkin REQUIRED COMPONENTS
         #  std_msgs
         wire_msgs
         problib
+        image_transport
+        cv_bridge
         )
 
 #catkin_package(
