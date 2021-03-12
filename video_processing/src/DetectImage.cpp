@@ -58,7 +58,7 @@ vector<Vec3f> detectCircles(Mat image)
     return circles;
 }
 
-void detectBlobs(Mat im)
+vector<KeyPoint> detectBlobs(Mat im)
 {
     Mat image;
     //medianBlur(im, image, 5);
@@ -74,14 +74,14 @@ void detectBlobs(Mat im)
 
     // Filter by Area.
     params.filterByArea = true;
-    params.minArea = 100;
+    params.minArea = 50;//100
 
     // Filter by Circularity
-    params.filterByCircularity = true;
+    params.filterByCircularity = false;
     params.minCircularity = 0.05;
 
     // Filter by Convexity
-    params.filterByConvexity = true;
+    params.filterByConvexity = false;
     params.minConvexity = 0.87;
 
     // Filter by Inertia
@@ -109,13 +109,15 @@ void detectBlobs(Mat im)
     detector->detect( image, keypoints);
 #endif
 
-    Mat im_with_keypoints;
-    drawKeypoints( image, keypoints, im_with_keypoints, Scalar(100,100,155), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+//    Mat im_with_keypoints;
+//    drawKeypoints( image, keypoints, im_with_keypoints, Scalar(100,100,155), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+//
+//    // Show blobs
+//    imshow("keypoints", im_with_keypoints );
+//    waitKey(3);
+//    printf("Keypoints found: %lu \n",keypoints.size());
 
-    // Show blobs
-    imshow("keypoints", im_with_keypoints );
-    waitKey(3000);
-    printf("Keypoints found: %lu \n",keypoints.size());
+    return keypoints;
 }
 
 void plotCircles(Mat image, vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vector<Vec3f> z )
@@ -150,6 +152,25 @@ void plotCircles(Mat image, vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vec
     waitKey(10);
 }
 
+void plotComparison(Mat im, vector<Vec3f> my_circle, vector<KeyPoint> my_blob){
+    Scalar_<double> color=Scalar(200, 200, 0);
+
+    Mat image;
+    bitwise_not(im, image);
+
+    Mat im_with_keypoints;
+    drawKeypoints( image, my_blob, im_with_keypoints, Scalar(100,100,200), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
+    for(size_t i=0; i<my_circle.size(); i++) {
+        Point center(cvRound(my_circle[i][0]), cvRound(my_circle[i][1]));
+        int radius = cvRound(my_circle[i][2]*.5);
+        circle(im_with_keypoints, center, radius, color, 2, 8, 0);
+    }
+
+    imshow("image", im_with_keypoints);
+    waitKey(10);
+}
+
 void storingData(vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vector<Vec3f> z){
     static int countycount=0;
     std::ofstream myfile;
@@ -181,7 +202,7 @@ void addEvidence(wire_msgs::WorldEvidence& world_evidence, double x, double y, d
     posProp.attribute = "position";
 
     // Set position (x,y,z), set the covariance matrix as 0.005*identity_matrix
-    pbl::PDFtoMsg(pbl::Gaussian(pbl::Vector3(x, y, z), pbl::Matrix3(1, 1, 1)), posProp.pdf);
+    pbl::PDFtoMsg(pbl::Gaussian(pbl::Vector3(x, y, z), pbl::Matrix3(200, 200, 200)), posProp.pdf);
     obj_evidence.properties.push_back(posProp);
 
     // Set the discrete class label property
@@ -190,7 +211,7 @@ void addEvidence(wire_msgs::WorldEvidence& world_evidence, double x, double y, d
     pbl::PMF classPMF;
 
     // Probability of the class label is 0.7
-    classPMF.setProbability(class_label, 0.7);
+    classPMF.setProbability(class_label, 0.4);
     pbl::PDFtoMsg(classPMF, classProp.pdf);
     obj_evidence.properties.push_back(classProp);
 
@@ -200,7 +221,7 @@ void addEvidence(wire_msgs::WorldEvidence& world_evidence, double x, double y, d
     pbl::PMF colorPMF;
 
     // The probability of the detected color is 0.9
-    colorPMF.setProbability(color, 0.1);
+    colorPMF.setProbability(color, 0.3);
     pbl::PDFtoMsg(colorPMF, colorProp.pdf);
     obj_evidence.properties.push_back(colorProp);
 
@@ -218,13 +239,13 @@ void generateEvidence(vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vector<Ve
 
     // Add evidence
     for(size_t i=0; i<y.size(); i++) {
-        addEvidence(world_evidence, y[i][0], y[i][1], 0, "disc", "yellow");
+//        addEvidence(world_evidence, y[i][0], y[i][1], 0, "disc", "yellow");
     }
     for(size_t i=0; i<r.size(); i++) {
-//        addEvidence(world_evidence, r[i][0], r[i][1], 0, "disc", "red");
+        addEvidence(world_evidence, r[i][0], r[i][1], 0, "disc", "red");
     }
     for(size_t i=0; i<b.size(); i++) {
-//        addEvidence(world_evidence, b[i][0], b[i][1], 0, "disc", "blue");
+        addEvidence(world_evidence, b[i][0], b[i][1], 0, "disc", "blue");
     }
     for(size_t i=0; i<z.size(); i++) {
 //        addEvidence(world_evidence, z[i][0], z[i][1], 0, "disc", "black");
@@ -234,12 +255,34 @@ void generateEvidence(vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vector<Ve
     ROS_INFO("Published world evidence with size %d", world_evidence.object_evidence.size());
 }
 
+void generateEvidence2(vector<KeyPoint> y, vector<KeyPoint> r,vector<KeyPoint> b,vector<KeyPoint> z){
+    // Create world evidence message
+    wire_msgs::WorldEvidence world_evidence;
+
+    // Set header
+    world_evidence.header.stamp = ros::Time::now();
+    world_evidence.header.frame_id = "/map";
+
+
+    // Add evidence
+//    for(size_t i=0; i<y.size(); i++) {
+//        addEvidence(world_evidence, y[i].pt.x, y[i].pt.y, 0, "disc", "yellow");
+//    }
+    for(size_t i=0; i<r.size(); i++) {
+        addEvidence(world_evidence, r[i].pt.x, r[i].pt.y, 0, "disc", "red");
+    }
+    for(size_t i=0; i<b.size(); i++) {
+        addEvidence(world_evidence, b[i].pt.x, b[i].pt.y, 0, "disc", "blue");
+    }
+//    for(size_t i=0; i<z.size(); i++) {
+//        addEvidence(world_evidence, z[i].pt.x, z[i].pt.y, 0, "disc", "black");
+//    }
+    world_evidence_publisher_.publish(world_evidence);
+    ROS_INFO("%i Published world evidence with size %d", world_evidence.object_evidence.size());
+}
+
 int main(int argc, char** argv )
 {
-//    ros::init(argc, argv, "talker");
-//    ros::NodeHandle nh;
-//    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-
 // Initialize ros and create node handle
     ros::init(argc,argv,"dummy_evidence_publisher");
     ros::NodeHandle nh;
@@ -294,35 +337,34 @@ int main(int argc, char** argv )
         Mat blackOnly = colorFilter(image, black);//blackFilter(image);
 
             // Detect circles:
-        vector<Vec3f> y = detectCircles(yellowOnly);
-        //printf("yellow circles found: %lu \n",y.size());
-        vector<Vec3f> r =detectCircles(redOnly);
-        //printf("red circles found: %lu \n",r.size());
-        vector<Vec3f> b =detectCircles(blueOnly);
-        //printf("blue circles found: %lu \n",b.size());
-        vector<Vec3f> z =detectCircles(blackOnly);
+        //vector<Vec3f> y = detectCircles(yellowOnly);
+        vector<KeyPoint> y2=detectBlobs(yellowOnly);
+
+//        vector<Vec3f> r =detectCircles(redOnly);
+        vector<KeyPoint> r2=detectBlobs(redOnly);
+
+        //vector<Vec3f> b =detectCircles(blueOnly);
+        vector<KeyPoint> b2=detectBlobs(blueOnly);
+
+        //vector<Vec3f> z =detectCircles(blackOnly);
+        vector<KeyPoint> z2=detectBlobs(blackOnly);
         //printf("black circles found: %lu \n",z.size());
 
-        //show the frame in the created window
-        //(image,y,r,b,z);
-        //imshow(window_name, blueOnly);
-
+        //// Publishing
         //storingData(y,r,b,z);
-        generateEvidence(y,r,b,z);
+//        generateEvidence(y,r,b,z);
+        generateEvidence2(y2,r2,b2,z2);
 
+        //// Showing the frame
+            // NON-ROS
+        //imshow(window_name, blueOnly);
+        //plotCircles(blueOnly, y,r,b,z);
+//        plotComparison(redOnly,r,r2);
+            //ROS
         sensor_msgs::ImagePtr msg;
         msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
-
         camera_publisher_.publish(msg);
         ros_r.sleep();
-
-
-//        //If any key is not pressed withing 10 ms, continue the loop
-//        if (waitKey(10) == 27)
-//        {
-//            cout << "Esc key is pressed by user. Stoppig the video" << endl;
-//            break;
-//        }
     }
     return 0;
 }
