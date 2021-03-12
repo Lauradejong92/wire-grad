@@ -48,3 +48,7 @@ target_link_libraries( DisplayImage ${OpenCV_LIBS} )
 add_executable( DetectImage src/DetectImage.cpp )
 target_link_libraries( DetectImage ${OpenCV_LIBS} )
 target_link_libraries(DetectImage ${catkin_LIBRARIES})
+
+add_executable( TuningDetection src/TuningDetection.cpp )
+target_link_libraries( TuningDetection ${OpenCV_LIBS} )
+target_link_libraries(TuningDetection ${catkin_LIBRARIES})

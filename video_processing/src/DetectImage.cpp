@@ -67,6 +67,7 @@ vector<KeyPoint> detectBlobs(Mat im)
 
 // Setup SimpleBlobDetector parameters.
     SimpleBlobDetector::Params params;
+    params.minDistBetweenBlobs = 60;
 
     // Change thresholds
     params.minThreshold = 10;
@@ -278,7 +279,7 @@ void generateEvidence2(vector<KeyPoint> y, vector<KeyPoint> r,vector<KeyPoint> b
 //        addEvidence(world_evidence, z[i].pt.x, z[i].pt.y, 0, "disc", "black");
 //    }
     world_evidence_publisher_.publish(world_evidence);
-    ROS_INFO("%i Published world evidence with size %d", world_evidence.object_evidence.size());
+    ROS_INFO("Published world evidence with size %d", world_evidence.object_evidence.size());
 }
 
 int main(int argc, char** argv )
@@ -302,7 +303,7 @@ int main(int argc, char** argv )
     myfile.close();
 
     Scalar_<double> yellow= Scalar(110,225,250);
-    Scalar_<double> red= Scalar(65,90,250);//70,80,250
+    Scalar_<double> red= Scalar(65,75,250);//70,80,250
     Scalar_<double> blue= Scalar(250,130,10);
     Scalar_<double> black= Scalar(20,20,20);
 
@@ -356,11 +357,6 @@ int main(int argc, char** argv )
         generateEvidence2(y2,r2,b2,z2);
 
         //// Showing the frame
-            // NON-ROS
-        //imshow(window_name, blueOnly);
-        //plotCircles(blueOnly, y,r,b,z);
-//        plotComparison(redOnly,r,r2);
-            //ROS
         sensor_msgs::ImagePtr msg;
         msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
         camera_publisher_.publish(msg);

@@ -1,8 +1,8 @@
 <knowledge>
 
-    <prior_new value="0.14" />
-    <prior_existing value="0.74" />
-    <prior_clutter value="0.12" />
+    <prior_new value="0.03" />
+    <prior_existing value="1.14" />
+    <prior_clutter value="0.03" />
 
     <object_class name="object"> 
     
@@ -10,9 +10,9 @@
             <pnew type="uniform" dimensions="3" density="0.0001" />            
             <pclutter type="uniform" dimensions="3" density="0.0001" />
 
-            <param name="max_acceleration" value="1000" />
+            <param name="max_acceleration" value="1500" />
             <param name="kalman_timeout" value=".5" />
-            <param name="fixed_pdf_cov" value="40" />
+            <param name="fixed_pdf_cov" value="800" />
         </behavior_model>
 
         <behavior_model attribute="color" model="wire_state_estimators/DiscreteEstimator">
