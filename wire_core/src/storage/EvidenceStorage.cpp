@@ -137,7 +137,7 @@ namespace mhf {
                         mean_pos=mean_pos+EvidenceStorage().getPos(&clustered_ev);
                     }
                     mean_pos=mean_pos/setsize;
-                    printf("Cluster mean: %f, %f, %f \n", mean_pos(0), mean_pos(1),mean_pos(2));
+                    //printf("Cluster mean: %f, %f, %f \n", mean_pos(0), mean_pos(1),mean_pos(2));
 
                     //check if inner radius< 95 cert.
                     for (const auto clustered_ev: cluster_vector){

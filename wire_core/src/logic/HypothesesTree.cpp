@@ -113,7 +113,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     double tstart = ros::Time::now().toSec();
 
     //Add evidence to storage ???
-//    EvidenceStorage::getInstance().add(ev_set,setsize);
+    EvidenceStorage::getInstance().add(ev_set,setsize);
     EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
@@ -144,8 +144,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
-//    findTrailConflicts(setsize);
-//    pruneTree2(ev_set.getTimestamp());
+    findTrailConflicts(setsize);
+    pruneTree2(ev_set.getTimestamp());
 
 
     // clear old hypotheses leafs
