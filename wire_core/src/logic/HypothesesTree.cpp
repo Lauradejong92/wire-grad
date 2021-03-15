@@ -113,8 +113,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     double tstart = ros::Time::now().toSec();
 
     //Add evidence to storage ???
-    //EvidenceStorage::getInstance().add(ev_set,setsize);
-    //EvidenceStorage::getInstance().cluster(setsize);
+//    EvidenceStorage::getInstance().add(ev_set,setsize);
+    EvidenceStorage::getInstance().cluster(setsize);
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(auto it_ev : ev_set) {
@@ -144,8 +144,8 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
-    //findTrailConflicts(setsize);
-    //pruneTree2(ev_set.getTimestamp());
+//    findTrailConflicts(setsize);
+//    pruneTree2(ev_set.getTimestamp());
 
 
     // clear old hypotheses leafs
@@ -595,7 +595,7 @@ void HypothesisTree::showStatistics() {
             const Property* my_prop = obj.getProperty("position");
             myfile_map << obj.getID()<<", "<<my_prop->toString()<<"\n";
 //            const Property* myprop2 = obj.getProperty("color");
-            std::cout << my_prop->toString()<<std::endl;
+            std::cout << "object"<< obj.getID()<<std::endl;
         }
         myfile_map << "];"<<"\n";
         myfile_map.close();

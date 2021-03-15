@@ -52,22 +52,12 @@ namespace mhf {
         if (evidenceMap.size()>=setsize){
             // Variables
             double chi_2_inner=16.266; //99.9%
-            double chi_2_outer=80; // 2*chi 99.9
-            float r_in =0.01; //1cm
-            float r_out = 0.02; //2cm
-            double appearance_match=.99;
+            float r_in =5; //pixels
 
             //Covariance matrix
             arma::mat S(3,3);
-            S <<0.0655e-5<<-0.0015e-5<<-0.0366e-5<<arma::endr <<-0.0015e-5 <<  0.0319e-5 << 0.0087e-5 << arma::endr << -0.0366e-5 << 0.0087e-5 << 0.5385e-5;
-
-
-//                //// Radius gives MD
-//            arma::vec diff(3);
-//            diff << 0.0025 <<arma::endr << 0 << arma::endr <<0;
-//            double mahalanobis_dist_sq = arma::dot(arma::inv(S) * diff, diff);
-//            printf("maha: %f \n", mahalanobis_dist_sq);
-
+            //S <<0.0655e-5<<-0.0015e-5<<-0.0366e-5<<arma::endr <<-0.0015e-5 <<  0.0319e-5 << 0.0087e-5 << arma::endr << -0.0366e-5 << 0.0087e-5 << 0.5385e-5;
+            S<<0.0075 << 0<<0<<arma::endr << 0<< 0.0393 <<0<<arma::endr <<0<<0<<00001;
 
             // remove old clusters
             TrailStorage::getInstance().clear();
