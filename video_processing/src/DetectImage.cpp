@@ -63,7 +63,7 @@ vector<KeyPoint> detectBlobs(Mat im)
     Mat image;
     //medianBlur(im, image, 5);
 
-   bitwise_not(im, image);
+    bitwise_not(im, image);
 
 // Setup SimpleBlobDetector parameters.
     SimpleBlobDetector::Params params;
@@ -97,10 +97,10 @@ vector<KeyPoint> detectBlobs(Mat im)
 #if CV_MAJOR_VERSION < 3   // If you are using OpenCV 2
 
     // Set up detector with params
-	SimpleBlobDetector detector(params);
+    SimpleBlobDetector detector(params);
 
-	// Detect blobs
-	detector.detect( im, keypoints);
+    // Detect blobs
+    detector.detect( im, keypoints);
 #else
 
     // Set up detector with params
@@ -150,7 +150,7 @@ void plotCircles(Mat image, vector<Vec3f> y, vector<Vec3f> r,vector<Vec3f> b,vec
     }
 
     imshow("image", image);
-    waitKey(10);
+    //waitKey(10);
 }
 
 void plotComparison(Mat im, vector<Vec3f> my_circle, vector<KeyPoint> my_blob){
@@ -307,7 +307,8 @@ int main(int argc, char** argv )
     Scalar_<double> blue= Scalar(250,130,10);
     Scalar_<double> black= Scalar(20,20,20);
 
-    VideoCapture cap("/home/laura/Pictures/testytest.mp4");
+    //VideoCapture cap("/home/laura/Pictures/testytest.mp4");
+    VideoCapture cap("/home/laura/Pictures/Soccervideo.mp4");
 
 
     //get the frames rate of the video
@@ -317,27 +318,32 @@ int main(int argc, char** argv )
 
     String window_name = "video";
 
+    int startframe=1820;//1820
+    int endframe=3375;
+    cap.set(1,startframe);
+
     //namedWindow(window_name, WINDOW_NORMAL); //create a window
 
     while (ros::ok()) {
         Mat image;
         bool bSuccess = cap.read(image); // read a new frame from video
 
+        //cout<<cap.get(1)<<endl;
         //Breaking the while loop at the end of the video
-        if (bSuccess == false)
+        if (bSuccess == false || cap.get(1)==endframe )
         {
             cout << "Found the end of the video" << endl;
             break;
         }
 
         ////Processing:
-            // Kleuren:
+        // Kleuren:
         Mat yellowOnly = colorFilter(image, yellow);
         Mat redOnly = colorFilter(image, red);
         Mat blueOnly = colorFilter(image, blue);
         Mat blackOnly = colorFilter(image, black);//blackFilter(image);
 
-            // Detect circles:
+        // Detect circles:
         //vector<Vec3f> y = detectCircles(yellowOnly);
         vector<KeyPoint> y2=detectBlobs(yellowOnly);
 
