@@ -57,7 +57,8 @@ namespace mhf {
             //Covariance matrix
             arma::mat S(3,3);
             //S <<0.0655e-5<<-0.0015e-5<<-0.0366e-5<<arma::endr <<-0.0015e-5 <<  0.0319e-5 << 0.0087e-5 << arma::endr << -0.0366e-5 << 0.0087e-5 << 0.5385e-5;
-            S<<0.0075 << 0<<0<<arma::endr << 0<< 0.0393 <<0<<arma::endr <<0<<0<<00001;
+            //S<<0.0075 << 0<<0<<arma::endr << 0<< 0.0393 <<0<<arma::endr <<0<<0<<00001;
+            S<<0.01 << -0.005<<0<<arma::endr << -0.005<< 0.01 <<0<<arma::endr <<0<<0<<0.0001;
 
             // remove old clusters
             TrailStorage::getInstance().clear();
