@@ -436,9 +436,9 @@ void HypothesisTree::pruneTree(const Time& timestamp) {
 }
 
 void HypothesisTree::findTrailConflicts(int setsize) {
-
+    std::list<Hypothesis*> weak_hyps;
     for (const auto& cluster : TrailStorage::getInstance().getTrail()) {
-        std::list<Hypothesis*> weak_hyps;
+
         //printf("     next cluster:\n");
         //std::cout << "          Evidence:" << cluster[4].getAdress() << std::endl;
         //printf("       Storage size: %i \n",ObjectStorage::getInstance().getObjects().size());
@@ -466,33 +466,40 @@ void HypothesisTree::findTrailConflicts(int setsize) {
                     //object conflicts with cluster:
                     for (const auto weak_hyp: object->getParents()){
                         weak_hyps.push_back(weak_hyp);
-                        //printf("           parent prob: %f, to map: %f\n",strong_hyp->getProbability(), getMAPHypothesis().getProbability());
+                        //printf("           parent prob: %f, to map: %f\n",weak_hyp->getProbability(), getMAPHypothesis().getProbability());
                     }
+                    //printf(" weak hyps:%i \n", weak_hyps.size());
                 }
             }
         }
 
-        //printf("Strong hyps found for this cluster: %i \n",strong_hyps.size());
-        //now prune all unmarked parents
-        if (!weak_hyps.empty()) {
-            //int count =0;
-            for (const auto leaf_hyp: leafs_) {
-                for (const auto weak_hyp: weak_hyps) {
-                    if (leaf_hyp == weak_hyp) {
-                        //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
-                        leaf_hyp->setProbability(leaf_hyp->getProbability()*1e-8);
-                        //leaf_hyp->setProbability(0);
-                        //count++;
-                    }
-                }
-            }
-            //printf("Weak hyps found: %i \n",count);
-        }
-        //set mark to unmarked;
+
 
 
     }
+    // Remove duplicates
+//    int i=weak_hyps.size();
+    weak_hyps.sort();
+    weak_hyps.erase(unique(weak_hyps.begin(), weak_hyps.end()),weak_hyps.end());
+//    printf(" reduced from:%i to %i \n", i, weak_hyps.size());
 
+    //printf("Strong hyps found for this cluster: %i \n",strong_hyps.size());
+    //now prune all unmarked parents
+    if (!weak_hyps.empty()) {
+        //int count =0;
+        for (const auto leaf_hyp: leafs_) {
+            for (const auto weak_hyp: weak_hyps) {
+                if (leaf_hyp == weak_hyp) {
+                    //printf("            leaf: %f and strong: %f \n",strong_hyp->getHeight(), leaf_hyp->getProbability(),strong_hyp->getProbability());
+                    leaf_hyp->setProbability(leaf_hyp->getProbability()*1e-8);
+                    //leaf_hyp->setProbability(0);
+                    //count++;
+                }
+            }
+        }
+        //printf("Weak hyps found: %i \n",count);
+    }
+    //set mark to unmarked;
    // printf("new MAP %f",getMAPHypothesis().getProbability());
 }
 
