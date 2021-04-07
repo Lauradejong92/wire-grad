@@ -108,7 +108,7 @@ public:
     void showMAP();
     void showHypP();
     void showTrail();
-    void showTime(double delta_t);
+    void showTime(double delta_t, double delta_cluster, double delta_prune);
 
 protected:
 
