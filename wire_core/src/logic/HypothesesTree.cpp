@@ -115,6 +115,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     //Add evidence to storage ???
     EvidenceStorage::getInstance().add(ev_set,setsize);
     EvidenceStorage::getInstance().cluster(setsize);
+        double t1 = ros::Time::now().toSec();
 
     //** Propagate all objects, compute association probabilities and add all possible measurement-track assignments
     for(auto it_ev : ev_set) {
@@ -144,11 +145,14 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
 
     //printf("Hyps before pruning:                     %i \n",leafs_.size());
     //Clusterbased pruning
+    double t2 = ros::Time::now().toSec();
     findTrailConflicts(setsize);
     pruneTree2(ev_set.getTimestamp());
+    double t3 = ros::Time::now().toSec();
 
 
-    // clear old hypotheses leafs
+
+        // clear old hypotheses leafs
     // The hypotheses will still be there to form a tree, but do not contain any objects anymore
     root_->clearInactive();
 
@@ -161,7 +165,7 @@ void HypothesisTree::addEvidence(const EvidenceSet& ev_set) {
     ++n_updates_;
 
     double tend = ros::Time::now().toSec();
-    showTime(tend-tstart);
+    showTime(tend-tstart, t1-tstart,t3-t2);
     showMAP();
     showHypP();
     showTrail();
@@ -631,11 +635,11 @@ void HypothesisTree::showStatistics() {
         myfile_tra.close();
         printf("        Trail = %i \n",TrailStorage::getInstance().getTrail().size());
     }
-    void HypothesisTree::showTime(double delta_t) {
+    void HypothesisTree::showTime(double delta_t, double delta_cluster, double delta_prune) {
         std::ofstream myfile_time;
         myfile_time.open("/home/amigo/Documents/Data_collection/time_mat.m", std::ios::app);
         myfile_time << "time{" << n_updates_ << "}=[";
-        myfile_time << delta_t;
+        myfile_time << delta_t<<", "<<delta_cluster<<", "<<delta_prune;
         myfile_time << "];" << "\n";
         myfile_time.close();
     }

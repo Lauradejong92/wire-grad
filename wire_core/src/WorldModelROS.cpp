@@ -19,7 +19,7 @@ using namespace std;
 using namespace mhf;
 
 WorldModelROS::WorldModelROS(tf::TransformListener* tf_listener)
-    : loop_rate_(20), world_model_(0),  tf_listener_(tf_listener), is_tf_owner_(false), last_update_duration(0),
+    : loop_rate_(100), world_model_(0),  tf_listener_(tf_listener), is_tf_owner_(false), last_update_duration(0),
       max_update_duration(0), world_model_frame_id_("/map"), output_frame_id_("/map"), max_num_hyps_(100), min_prob_ratio_(1e-10),
       last_update_(0) {
     initialize();
